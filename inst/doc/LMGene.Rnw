@@ -1,0 +1,255 @@
+% NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
+% likely to be overwritten.
+%
+% \VignetteIndexEntry{LMGene user's guide}
+% \VignetteDepends{Biobase, tools, multtest, genefilter, survival, splines, reposTools}
+
+\documentclass[11pt]{article}
+\usepackage{amsmath,pstricks,fullpage}
+\usepackage{hyperref}
+
+
+\parindent 0in  % Left justify
+
+
+\usepackage{C:/texmf/Sweave}
+
+\begin{document}
+
+\title{\bf LMGene User's Guide}
+\author{Geun-Cheol Lee and David M. Rocke}
+
+\maketitle
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+This article introduces a short usage of \texttt{LMGene} package. 
+LMGene package has been developed mainly for analysis of microarray data using 
+a linear model and glog data transformation in the R statistical package.
+This package also provides good visual supports which give overall behavior of
+microarray data to users.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data preparation}
+\texttt{LMGene} package uses objects of \texttt{exprSet} class as its input data
+, which is the standard data sturcture of the \texttt{Biobase} package.
+Hence, if data which is \texttt{exprSet} class is ready, the user can jump to further
+steps, like diagnostic plotting or g-log transformation.
+Otherwise, the user needs to generate new \texttt{exprSet} class data.
+For more detail, please see the vignette, `Textual Description of Biobase' in the \texttt{Biobase} package.
+
+{\bf Note: exprSet.} In this package, an object of \texttt{exprSet} class must contain
+\texttt{exprs} and \texttt{phenoData} slots with proper data.
+
+{\tt Example.} \texttt{LMGene} package includes a sample array data which is a class of {\tt exprSet}.
+Let's take a look this sample data.
+
+\begin{enumerate}
+
+\item First, load the necessary packages in your R session.
+<<eval=TRUE, echo=TRUE>>=
+library(LMGene)
+library(Biobase)
+library(tools)
+@
+
+\item Load the sample {\tt exprSet} class data in the package {\tt LMGene}.
+<<eval=TRUE, echo=TRUE>>=
+data(Smpd0)
+@
+
+\item View the data structure of the sample data and 
+the details of {\tt exprs} and {\tt phenoData} slots in the data.
+<<eval=TRUE, echo=TRUE>>=
+slotNames(Smpd0)
+dim(Smpd0@exprs)
+Smpd0@exprs[1:3,]
+Smpd0@phenoData
+slotNames(Smpd0@phenoData)
+@
+
+\end{enumerate}
+
+{\tt Data generation.} If you don't have {\tt exprSet} class data, you need to make one.
+\texttt{LMGene} package provides a function that can generate an object of {\tt exprSet} class,
+assuming that there are array data of {\tt matrix} class and experimental data of {\tt list} class.
+
+\begin{enumerate}
+
+\item The package has sample array and experimental data, {\tt Smpd} and {\tt vlist}.
+<<eval=TRUE, echo=TRUE>>=
+data(Smpd)
+dim(Smpd)
+data(vlist)  
+vlist
+@
+
+\item Generate {\tt exprSet} class data using {\tt neweS} function.
+<<eval=TRUE, echo=TRUE>>=
+Smpd1<-neweS(Smpd, vlist)
+class(Smpd1)
+identical(Smpd0, Smpd1)
+@
+
+
+\end{enumerate}
+
+
+{\tt c.f.} If you have different types of array data, such as {\tt RGList}, {\tt marrayRaw}, and so on, 
+you can convert them into {\tt exprSet} class by using {\tt as} method after installing {\tt convert} package.
+
+
+\section{Diagnostic methods}
+{\tt LMGene} package provides several plotting functions that show the overall
+behavior of the array data.
+
+\begin{itemize}
+\item {\tt Plotting density function:} First, the package can plot the kernel density of each channel in the array data.
+Before the plotting, the data is log-trasformed and normalized.
+<<eval=TRUE, echo=TRUE, fig=TRUE>>=
+rgplot(Smpd0)
+@
+\item {\tt Smoothed histogram:} 
+To evaluate the overall sources of variation in the array data produced in this study, 
+we use a visual tool. Before making data for the plotting, 
+we perform the analysis of variance (ANOVA) for each gene considering all factors.
+Using this analysis, relative mean square values of the factors (including error factor) for all genes can be obtained
+ and the overall results of the data can be presented with a smoothed histogram.
+<<eval=TRUE, echo=TRUE, fig=TRUE>>=
+arrplotd(Smpd0)
+@
+ 
+\item {\tt Cumulative frequency distribution:} The same results of the relative mean square values from the previous analysis,
+a different graph, cumulative frequency distribution, can be plotted.
+<<eval=TRUE, echo=TRUE, fig=TRUE>>=
+arrplote(Smpd0)
+@
+
+\end{itemize}
+
+
+\section{G-log transformation}
+\begin{enumerate}
+\item {\tt Estimating parameters for g-log transformation.} 
+Estimate the parameters ${\lambda}$ and ${\alpha}$ of the generalized log
+   transform ${\log{(y - {\alpha} + {\sqrt{(y - {\alpha})^2 + {\lambda}}})}}$. Using the
+   function tranest0 as follows
+
+<<eval=TRUE, echo=TRUE>>=
+   tranpar <- tranest(Smpd0)
+   tranpar
+@
+
+   The optional parameter {\tt ngenes} controls how many genes are used in
+   the estimation. the default is all of them, but it may be
+   impractical in some cases. A typical call using this parameter
+   would be
+
+<<eval=TRUE, echo=TRUE>>=
+   tranpar <- tranest(Smpd0, 100)
+   tranpar
+@
+
+   In this case, 100 genes are chosen at random and used to estimate
+   the transformation parameter. The routine returns a list
+   containing values for lambda and alpha.
+   
+\item {\tt G-log transformation.} Using the obtained two parameters, g-log transformed
+array data ({\tt matrix} class) can be calculated as follows.
+<<eval=TRUE, echo=TRUE>>=
+Smpd[1:3,]
+Glogged <- glog(Smpd-tranpar$alpha,tranpar$lambda)
+Glogged[1:3,]
+@
+\end{enumerate}
+
+Execution time for tranest and lmgene can be substantial, up to
+   several hours, depending on the size of the data set and the choice
+   (for tranest) of the parameter ngenes. It may be worthwhile to try
+   tranest first with a relatively small number of genes or probes,
+   say 100-1000, to check execution time before starting with the full
+   set of genes/probes.
+   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Finding differentially expressed genes}
+
+\begin{enumerate}
+\item {\tt Transformation and Normalization.} Before finding differentially expressed genes,
+the array data needs to be log-like transformed and normalized. Thus, we first 
+generate {\tt exprSet} class data which contains g-log transformed and lowess normalized array matrix data.
+<<eval=TRUE, echo=TRUE>>=
+Glogged <- glog(Smpd-tranpar$alpha,tranpar$lambda)
+LLdGlogged<-lnorm(Glogged)
+Smpd2<-neweS(LLdGlogged,vlist)
+@
+   
+\item {\tt Finding differentially expressed genes} 
+The lmgene routine computes significant genes using the method of
+   Rocke (2003). A typical call would be
+
+<<eval=TRUE, echo=TRUE>>=
+   siggenes <- LMGene(Smpd2)
+@
+  There
+   is an optional argument, level, which is the test level, .05 by
+   default. A call using this optional parameter would by typically
+
+<<eval=TRUE, echo=TRUE>>=
+   siggenes <- LMGene(Smpd2,.01)
+@
+   The result is a list whose components have the effect names in the
+   model that have any significant genes, and have as values the
+   significant genes for the test of that effect or else the message
+   "No significant genes".
+
+\end{enumerate}
+
+The routine LMGene requires the multtest package. 
+
+\bibliographystyle{plain}
+\begin{thebibliography}{99}
+
+\bibitem{1}  
+Durbin, B.P., Hardin, J.S., Hawkins, D.M., and Rocke, D.M. (2002) ``A
+variance-stabilizing transformation for gene-expression microarray
+data,'' \emph{Bioinformatics}, {\bf18}, S105--S110.
+
+\bibitem{2} 
+Durbin, B. and Rocke, D. M. (2003a) ``Estimation of transformation
+parameters for microarray data,'' \emph{Bioinformatics}, {\bf19}, 1360--1367.
+
+\bibitem{3} 
+Durbin, B. and Rocke, D. M. (2003b) ``Exact and approximate
+variance-stabilizing transformations for two-color microarrays,''
+submitted for publication.
+
+\bibitem{4} 
+Geller, S.C., Gregg, J.P., Hagerman, P.J., and Rocke, D.M. (2003)
+``Transformation and normalization of oligonucleotide microarray
+data,'' \emph{Bioinformatics}, {\bf19}, 1817--1823.
+
+\bibitem{5} 
+Rocke, David M. (2004) ``Design and Analysis of Experiments with High Throughput Biological Assay Data,'' 
+\emph{Seminars in Cell and Developmental Biology },
+{\bf15}, 708--713.
+
+\bibitem{6} 
+Rocke, D., and Durbin, B. (2001) ``A model for measurement error for
+gene expression arrays,'' \emph{Journal of Computational Biology},
+{\bf8}, 557--569.
+
+\bibitem{7} 
+Rocke, D. and Durbin, B. (2003) ``Approximate
+variance-stabilizing transformations for gene-expression microarray
+data,'' \emph{Bioinformatics}, {\bf19}, 966--972.
+
+\end{thebibliography}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+
