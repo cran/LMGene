@@ -18,10 +18,10 @@ function(eS, model=NULL)
   mat1 <- as.matrix(exprs(eS))
   
   if (is.null(model)) {
-    model=''
+    model <- ''
     vars <- varLabels(eS)
     for (i in 1:length(vars)){
-      model=paste(model, vars[i], ifelse(i<length(vars), '+', ''), sep='')
+      model <- paste(model, vars[i], ifelse(i<length(vars), '+', ''), sep='')
     }
   } 
 
@@ -44,12 +44,9 @@ function(eS, model=NULL)
 #
   numeff <- length(effnames)
   tmp1 <- rowaov(eS, model)
-  
-#Check if overfit:
-  
+  #Check if overfit:
   if (is.null(tmp1)) {return(NULL)}
-  
-#Otherwise proceed
+  #Otherwise proceed
   msmat <- tmp1[1:numeff,]
   dfmat <- tmp1[(numeff+1):(2*numeff),]
   numf <- numeff-1
@@ -67,7 +64,6 @@ function(eS, model=NULL)
   eta <- alpha*beta
   prior <- 1/eta
   df <- 2*alpha
-#print(c(mn,v,alpha,beta,eta,prior,df))
 #
 # compute adjusted mean square errors
 #
@@ -85,6 +81,6 @@ function(eS, model=NULL)
   }
   colnames(pmat1) <- effnames[-numeff]
   colnames(pmat2) <- effnames[-numeff]
-return(list("Gene.Specific"=pmat1,"Posterior"=pmat2))
 
+  return(list("Gene.Specific"=pmat1,"Posterior"=pmat2))
 }

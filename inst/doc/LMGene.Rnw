@@ -5,7 +5,7 @@
 % \VignetteDepends{Biobase, tools, multtest, survival, splines}
 
 \documentclass[11pt]{article}
-\usepackage{amsmath,pstricks,fullpage}
+\usepackage{amsmath,fullpage}
 \usepackage{hyperref}
 
 
@@ -15,7 +15,7 @@
 \begin{document}
 
 \title{\bf LMGene User's Guide}
-\author{Geun-Cheol Lee, John Tillinghast, Jim Dai and David M. Rocke}
+\author{Geun-Cheol Lee, John Tillinghast and David M. Rocke}
 
 \maketitle
 
@@ -31,10 +31,18 @@ a linear model and glog data transformation in the R statistical package.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data preparation}
-\texttt{LMGene}  takes objects of class \texttt{expressionSet}, which is the standard data structure of the \texttt{Biobase} package. Hence, if data which is \texttt{expressionSet} class is ready, the user can jump to further steps, like diagnostic plotting or g-log transformation. Otherwise, the user needs to generate new \texttt{expressionSet} class data. For more detail, please see the vignette, `ExpressionSetIntroduction' in the \texttt{Biobase} package.
+\texttt{LMGene} takes objects of class \texttt{ExpressionSet}, which is the standard
+data structure of the \texttt{Biobase} package. Hence, if data which is of class
+\texttt{ExpressionSet} already, the user can jump to further steps, like diagnostic
+plotting or g-log transformation. Otherwise, the user needs to generate new objects
+of class \texttt{ExpressionSet}. For more detail, please see the vignette,
+`Textual Description of Biobase' in the \texttt{Biobase} package.
 
-{\tt Example.} \texttt{LMGene} includes a sample array data which is of class {\tt expressionSet}.
-Let's take a look this sample data.
+{\bf Note: ExpressionSet.} In this package, an object of class \texttt{ExpressionSet}
+must produce proper data using the commands \texttt{exprs(object)} and \texttt{phenoData(object)}.
+
+{\tt Example.} \texttt{LMGene} includes a sample array data which is of class
+{\tt ExpressionSet}. Let's take a look this sample data.
 
 \begin{enumerate}
 
@@ -45,23 +53,26 @@ library(Biobase)
 library(tools)
 @
 
-\item Load the sample {\tt expressionSet} class data in the package {\tt LMGene}.
+\item Load the sample {\tt ExpressionSet} class data in the package {\tt LMGene}.
 <<eval=TRUE, echo=TRUE>>=
 data(sample.eS)
 @
 
-\item View the data structure of the sample data and access data elements. You can obtain a brief summary of the contents of the ExpressionSet object by printing the object. You can extract data from it using a number of functions available. For example, you can extract the expression matrix and the phenotypic data using {\tt exprs} and {\tt phenoData}, respectively. Note that each column of the expression matrix has a different name.
+\item View the data structure of the sample data and 
+the details of {\tt exprs} and {\tt phenoData} slots in the data.
 <<eval=TRUE, echo=TRUE>>=
-sample.eS
+slotNames(sample.eS)
 dim(exprs(sample.eS))
 exprs(sample.eS)[1:3,]
 phenoData(sample.eS)
-pData(sample.eS)[1:4,]
+slotNames(phenoData(sample.eS))
 @
 
 \end{enumerate}
 
-{\tt Data generation.} If you don't have {\tt expressionSet} class data, you need to make some. \texttt{LMGene} provides a function that can generate an object of {\tt expressionSet} class, assuming that there are array data of {\tt matrix} class and experimental data of {\tt list} class. Note that the column names in the data matrix must be unique.
+{\tt Data generation.} If you don't have {\tt ExpressionSet} class data, you need to make some.
+\texttt{LMGene} provides a function that can generate an object of class {\tt ExpressionSet},
+assuming that there are array data of {\tt matrix} class and experimental data of {\tt list} class.
 
 \begin{enumerate}
 
@@ -73,45 +84,46 @@ data(vlist)
 vlist
 @
 
-\item Generate {\tt expressionSet} class data using {\tt neweS} function.
+\item Generate {\tt ExpressionSet} class data using {\tt neweS} function.
 <<eval=TRUE, echo=TRUE>>=
-annotation="hgu95av2"
-test.eS<-neweS(sample.mat, vlist, annotation)
-test.eS
+test.eS<-neweS(sample.mat, vlist)
+class(test.eS)
+identical(sample.eS, test.eS)
 @
 
 
 \end{enumerate}
 
 
-{\tt c.f.} If you have different types of array data, such as exprSet-like class, you may convert them into {\tt ExpressionSet} class by using {\tt as} method. 
+{\tt c.f.} If you have different types of array data, such as {\tt RGList}, {\tt marrayRaw}, and so on, 
+you can convert them into {\tt ExpressionSet} class by using {\tt as} method after installing {\tt convert} package.
+
 
 
 \section{G-log transformation}
 \begin{enumerate}
 \item {\tt Estimating parameters for g-log transformation.} 
 The linear model is not applied to the raw data, but to transformed and normalized data. Many people use a log transform. LMGene uses a log-like transform involving two parameters. We estimate the parameters ${\lambda}$ and ${\alpha}$ of the generalized log
-   transform ${\log{(y - {\alpha} + {\sqrt{(y - {\alpha})^2 + {\lambda}}})} = \sinh^{-1}(\frac{y-\alpha}{\lambda})}+\log(\lambda)$ using the
-   function tranest as follows:
+transform ${\log{(y - {\alpha} + {\sqrt{(y - {\alpha})^2 + {\lambda}}})} = \sinh^{-1}(\frac{y-\alpha}{\lambda})}+\log(\lambda)$ using the
+function tranest as follows:
 
 <<eval=TRUE, echo=TRUE>>=
-   tranpar <- tranest(sample.eS)
-   tranpar
+tranpar <- tranest(sample.eS)
+tranpar
 @
 
-   The optional parameter {\tt ngenes} controls how many genes are used in
-   the estimation. The default is all of them (up to 100,000), but this option allows the use of less. A typical call using this parameter
-   would be
+The optional parameter {\tt ngenes} controls how many genes are used in
+the estimation. The default is all of them (up to 100,000), but this option allows the use of less. A typical call using this parameter
+would be
 
 <<eval=TRUE, echo=TRUE>>=
-   tranpar <- tranest(sample.eS, 100)
-   tranpar
+tranpar <- tranest(sample.eS, 100)
+tranpar
 @
 
-   In this case, 100 genes are chosen at random and used to estimate
-   the transformation parameter. The routine returns a list
-   containing values for lambda and alpha.
-
+In this case, 100 genes are chosen at random and used to estimate
+the transformation parameter. The routine returns a list
+containing values for lambda and alpha.
 
    
 \item {\tt G-log transformation.} Using the obtained two parameters, the g-log transformed
@@ -151,8 +163,8 @@ tranparmult
 It is even possible now to estimate parameters using a specified model. For example, if we think that the interaction of variables in vlist is important, we can add interaction to the model:
 
 <<eval=TRUE, echo=TRUE>>=
-   tranpar <- tranest(sample.eS, model='patient + dose + patient:dose')
-   tranpar
+tranpar <- tranest(sample.eS, model='patient + dose + patient:dose')
+tranpar
 @
 
 The model is always specified in the same way as the right-hand side of an lm model. In the example above, we set the parameters to minimize the mean squared error for a regression of transformed gene expression against patient, log dose, and their interaction.
@@ -177,21 +189,22 @@ ntrsample.eS <- lnormeS (trsample.eS)
    
 \item {\tt Finding differentially expressed genes} 
 The lmgene routine computes significant probes using the method of
-   Rocke (2003). A typical call would be
+Rocke (2003). A typical call would be
 
 <<eval=TRUE, echo=TRUE>>=
-   sigprobes <- LMGene(ntrsample.eS)
+sigprobes <- LMGene(ntrsample.eS)
 @
-  There
-   is an optional argument, level, which is the test level, .05 by
-   default. A call using this optional parameter would look like
+
+There is an optional argument, level, which is the test level, .05 by
+default. A call using this optional parameter would look like
 
 <<eval=TRUE, echo=TRUE>>=
-   sigprobes <- LMGene(ntrsample.eS,level=.01)
+sigprobes <- LMGene(ntrsample.eS,level=.01)
 @
-   The result is a list whose components have the names of the effects in the
-   model. The values are the significant genes for the test of that effect or else the   
-   message "No significant genes".
+
+The result is a list whose components have the names of the effects in the
+model. The values are the significant genes for the test of that effect or else the
+message "No significant genes".
 
 As with tranest, it's possible to specify a more complex model to LMGene:
 

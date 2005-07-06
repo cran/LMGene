@@ -4,12 +4,11 @@ function (eS, lam, alpha, lowessnorm, R)
     starttime <- Sys.time()
     mat1 <- as.matrix(exprs(eS))
  #   for (i in 1:length(varLabels(eS))) {
- #       assign(paste("x", i, sep = ""), as.factor(pData(eS)[, 
- #           i]))
+ #       assign(paste("x", i, sep = ""), as.factor(pData(eS)[,i]))
  #   }
- #   fchar = ""
+ #   fchar <- ""
  #   for (i in 1:length(varLabels(eS))) {
- #       fchar = paste(fchar, paste("x", i, sep = ""), ifelse(i < 
+ #       fchar <- paste(fchar, paste("x", i, sep = ""), ifelse(i < 
  #           length(varLabels(eS)), "+", ""), sep = "")
  #   }
     mat2 <- as.matrix(mat1)
@@ -27,15 +26,13 @@ function (eS, lam, alpha, lowessnorm, R)
         mat2a <- norm(mat2[, (2 * n + 1):(3 * n)])
         mat2 <- norm(mat2[, 1:n])
     }
-    yres = R %*% t(mat2)
-    ylres = R %*% t(mat2l)
-    yares = R %*% t(mat2a)
+
+    yres <- R %*% t(mat2)
+    ylres <- R %*% t(mat2l)
+    yares <- R %*% t(mat2a)
     r1 <- sum(yres^2)
     r2 <- sum(2 * yres * ylres)
     r3 <- sum(2 * yres * yares)
 
     return(c(r1, r2, r3))
-    #return(r1)
 }
-
-

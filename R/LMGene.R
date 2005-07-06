@@ -1,13 +1,10 @@
 "LMGene" <-
 function (eS, model=NULL, level = 0.05 ) 
 {
-    pvlist <- genediff (eS, model)
-    
-#Check for overfitting
-    
-    if (is.null(pvlist)) {return (NULL)}
-    
-#Otherwise proceed
+    pvlist <- genediff(eS, model)
+    #Check for overfitting
+    if (is.null(pvlist)) {return(NULL)}
+    #Otherwise proceed
     apvlist <- pvadjust(pvlist)
     numeff <- ncol(apvlist$Posterior.FDR)
     for (effnum in 1:numeff) {
@@ -39,4 +36,3 @@ function (eS, model=NULL, level = 0.05 )
     }
     return(lmres)
 }
-

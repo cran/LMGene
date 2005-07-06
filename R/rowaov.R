@@ -6,9 +6,9 @@ function (eS, model=NULL)
         assign(paste("x", i, sep = ""), pData(eS)[, i])
     }
     if (is.null(model)) {
-    model = ""
+      model <- ""
       for (i in 1:length(varLabels(eS))) {
-        model = paste(model, paste("x", i, sep = ""), ifelse(i < 
+        model <- paste(model, paste("x", i, sep = ""), ifelse(i < 
             length(varLabels(eS)), "+", ""), sep = "")
       }
     }
@@ -19,24 +19,20 @@ function (eS, model=NULL)
     y <- t(mat2)
     formobj <- as.formula(model2)
     tmp <- lm(formobj, x=TRUE, data=pData(eS))
-    
     if (tmp$df <= 0) {
-      
       print("Error: model is overfit. Try a simpler model.")
-      
       return(NULL)
     }
-    #print(tmp$x)
     for (i in 1:p) {
-        tmp2 <- mlm2lm(tmp, i)
-        tmp3 <- anova(tmp2)
-        tmp4 <- c(tmp3$Mean, tmp3$Df)
-        if (i == 1) {
-            resmat <- tmp4
-        }
-        else {
-            resmat <- cbind(resmat, tmp4)
-        }
+      tmp2 <- mlm2lm(tmp, i)
+      tmp3 <- anova(tmp2)
+      tmp4 <- c(tmp3$Mean, tmp3$Df)
+      if (i == 1) {
+          resmat <- tmp4
+      }
+      else {
+          resmat <- cbind(resmat, tmp4)
+      }
     }
     return(resmat)
 }
