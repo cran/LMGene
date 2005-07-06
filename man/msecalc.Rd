@@ -1,3 +1,4 @@
+% --- Source file: msecalc.Rd ---
 \name{msecalc}
 \alias{msecalc}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -11,16 +12,16 @@ msecalc(eS, lam, alpha, lowessnorm, R)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eS}{ Array data. must be exprSet type. }
+  \item{eS}{ Array data. must be ExpressionSet type. }
   \item{lam}{ A parameter for glog transformation }
   \item{alpha}{ A parameter for glog transformation }
   \item{lowessnorm}{ TRUE, if lowess method is going to be used }
   \item{R}{ The residual matrix, i.e., identity minus the hat matrix}
 }
 \details{
-  The input argument, eS, must be exprSet type from Biobase package. 
+  The input argument, eS, must be ExpressionSet type from Biobase package. 
   If you have a matrix data and information about the considered factors,
-  then you can use \code{\link{neweS}} to conver the data into exprSet.
+  then you can use \code{\link{neweS}} to conver the data into ExpressionSet.
   Please see \code{\link{neweS}} in more detail.
 }
 \value{
@@ -29,7 +30,7 @@ msecalc(eS, lam, alpha, lowessnorm, R)
 \references{ 
 B. Durbin and D.M. Rocke, (2003) Estimation of Transformation Parameters for Microarray Data,  Bioinformatics, 19, 1360-1367.
 
-\url{http://www.idav.ucdavis.edu/~dmrocke/} 
+\url{http://dmrocke.ucdavis.edu/} 
 }
 \author{ David Rocke and Geun-Cheol Lee }
 \seealso{ \code{\link{jggrad2}}, \code{\link{tranest2}} }

@@ -1,3 +1,4 @@
+% --- Source file: tranestmult.Rd ---
 \name{tranestmult}
 \alias{tranestmult}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -11,7 +12,7 @@ tranestmult (eS, starting = FALSE, lambda = 1000, alpha = 0, gradtol = 0.001, lo
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eS}{ Array data. must be exprSet type. }
+  \item{eS}{ Array data. must be ExpressionSet type. }
   \item{starting}{ TRUE, if the given initial parameter values are used }
   \item{lambda}{ Initial parameter value for lambda }
   \item{alpha}{ Initial parameter value for alpha }
@@ -26,13 +27,13 @@ tranestmult (eS, starting = FALSE, lambda = 1000, alpha = 0, gradtol = 0.001, lo
 \details{
   This is primarily an internal function. The normal way of calling it would 
 be to call \code{\link{tranest}} with the option mult=TRUE.
-  The input argument eS must be exprSet type from Biobase package. 
+  The input argument eS must be ExpressionSet type from Biobase package. 
   If you have matrix data and information about the considered factors,
-  then you can use \code{\link{neweS}} to conver the data into exprSet.
+  then you can use \code{\link{neweS}} to conver the data into ExpressionSet.
   Please see \code{\link{neweS}} in more detail.
-  'model' is an optional character string, constructed like the right-hand side of a formula for lm. It specifies which of the variables in the exprSet will be used in the
+  'model' is an optional character string, constructed like the right-hand side of a formula for lm. It specifies which of the variables in the ExpressionSet will be used in the
 model and whether interaction terms will be included. If model=NULL, it uses all variables
-from the exprSet without interactions. Be careful of using interaction terms with factors: this often leads to overfitting, which will yield an error.
+from the ExpressionSet without interactions. Be careful of using interaction terms with factors: this often leads to overfitting, which will yield an error.
 
 }
 \value{
@@ -41,7 +42,7 @@ from the exprSet without interactions. Be careful of using interaction terms wit
 \references{ 
 B. Durbin and D.M. Rocke, (2003) Estimation of Transformation Parameters for Microarray Data,  Bioinformatics, 19, 1360-1367.
 
-\url{http://www.idav.ucdavis.edu/~dmrocke/} 
+\url{http://dmrocke.ucdavis.edu/} 
 }
 \author{ David Rocke and Geun-Cheol Lee }
 \seealso{ \code{\link{tranest}}, \code{\link{tranest2}} }

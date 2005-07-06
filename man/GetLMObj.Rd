@@ -1,3 +1,4 @@
+% --- Source file: GetLMObj.Rd ---
 \name{GetLMObj}
 \alias{GetLMObj}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -11,7 +12,7 @@ GetLMObj(eS, model=NULL)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{eS}{ An unprocessed expression set. }
-  \item{model}{ Model used in the regression. Uses only variables from eS@phenoData@pData. }
+  \item{model}{ Model used in the regression. Uses only variables from pData(eS). }
 }
 \details{
 

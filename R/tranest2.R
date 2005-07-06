@@ -1,9 +1,10 @@
+
 "tranest2" <-
 function (eS, starting = FALSE, lambda = 1000, alpha = 0, gradtol = 0.001, 
     lowessnorm=FALSE, method=1, model=NULL) 
 {
     starttime <- Sys.time()
-    mat1 <- as.matrix(eS@exprs)
+    mat1 <- as.matrix(exprs(eS))
     like <- function(x) {
         lnlam <- x[1]
         alpha <- x[2]

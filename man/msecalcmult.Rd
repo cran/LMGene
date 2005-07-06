@@ -1,3 +1,4 @@
+% --- Source file: msecalcmult.Rd ---
 \name{msecalcmult}
 \alias{msecalcmult}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -11,7 +12,7 @@ msecalcmult(eS, lam, alpha, lowessnorm=FALSE, R, grads=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eS}{ Array data. must be exprSet type. }
+  \item{eS}{ Array data. must be ExpressionSet type. }
   \item{lam}{ A parameter for glog transformation }
   \item{alpha}{ A parameter for glog transformation }
   \item{lowessnorm}{ TRUE, if lowess method is going to be used }
@@ -19,9 +20,9 @@ msecalcmult(eS, lam, alpha, lowessnorm=FALSE, R, grads=TRUE)
   \item{grads}{ If true, return gradient as well as error. Not used with some kinds of optimization.}
 }
 \details{
-  The input argument, eS, must be exprSet type from Biobase package. 
+  The input argument, eS, must be ExpressionSet type from Biobase package. 
   If you have a matrix data and information about the considered factors,
-  then you can use \code{\link{neweS}} to conver the data into exprSet.
+  then you can use \code{\link{neweS}} to conver the data into ExpressionSet.
   Please see \code{\link{neweS}} in more detail.
 }
 \value{
@@ -30,7 +31,7 @@ msecalcmult(eS, lam, alpha, lowessnorm=FALSE, R, grads=TRUE)
 \references{ 
 B. Durbin and D.M. Rocke, (2003) Estimation of Transformation Parameters for Microarray Data,  Bioinformatics, 19, 1360-1367.
 
-\url{http://www.idav.ucdavis.edu/~dmrocke/} 
+\url{http://dmrocke.ucdavis.edu/} 
 }
 \author{ David Rocke and Geun-Cheol Lee }
 \seealso{ \code{\link{jggrad2}}, \code{\link{tranest2}} }

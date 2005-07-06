@@ -2,7 +2,7 @@
 function (eS, lam, alpha, lowessnorm=FALSE, R, grads=TRUE) 
 {
     lambda = FALSE
-    mat1 <- as.matrix(eS@exprs)
+    mat1 <- as.matrix(exprs(eS))
     n <- dim(mat1)[2]
     p <- dim(mat1)[1]
     y=mat1
@@ -70,3 +70,4 @@ function (eS, lam, alpha, lowessnorm=FALSE, R, grads=TRUE)
     else { return(SSE) }
 
 }
+

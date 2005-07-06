@@ -1,15 +1,15 @@
 "rowaov" <-
 function (eS, model=NULL) 
 {
-    mat1 <- as.matrix(eS@exprs)
-    for (i in 1:length(eS@phenoData@varLabels)) {
-        assign(paste("x", i, sep = ""), eS@phenoData@pData[, i])
+    mat1 <- as.matrix(exprs(eS))
+    for (i in 1:length(varLabels(eS))) {
+        assign(paste("x", i, sep = ""), pData(eS)[, i])
     }
     if (is.null(model)) {
     model = ""
-      for (i in 1:length(eS@phenoData@varLabels)) {
+      for (i in 1:length(varLabels(eS))) {
         model = paste(model, paste("x", i, sep = ""), ifelse(i < 
-            length(eS@phenoData@varLabels), "+", ""), sep = "")
+            length(varLabels(eS)), "+", ""), sep = "")
       }
     }
     model2 <- paste("y ~", model)
@@ -18,9 +18,12 @@ function (eS, model=NULL)
     p <- dim(mat2)[1]
     y <- t(mat2)
     formobj <- as.formula(model2)
-    tmp <- lm(formobj, x=TRUE, data=eS@phenoData@pData)
+    tmp <- lm(formobj, x=TRUE, data=pData(eS))
+    
     if (tmp$df <= 0) {
+      
       print("Error: model is overfit. Try a simpler model.")
+      
       return(NULL)
     }
     #print(tmp$x)

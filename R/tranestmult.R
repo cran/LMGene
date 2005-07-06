@@ -1,9 +1,10 @@
+
 "tranestmult" <-
 function (eS, starting = FALSE, lambda = 1000, alpha = 0, gradtol = 0.001,
     lowessnorm=FALSE, method=1, max_iter=200, model=NULL)
 {
     starttime <- Sys.time()
-    mat1 <- as.matrix(eS@exprs)
+    mat1 <- as.matrix(exprs(eS))
     like <- function(x) {
         lnlam <- x[1]
         alpha <- x[2:length(x)]
@@ -56,7 +57,7 @@ function (eS, starting = FALSE, lambda = 1000, alpha = 0, gradtol = 0.001,
          check.analyticals=FALSE, gradtol=gradtol, steptol=1e-8, iterlim=max_iter)
        #print(difftime(Sys.time(),starttime))
        #print(opt)
-       return( list(lambda=exp(opt$estimate[1]), alpha=opt$estimate[2:length(opt$estimate)]) )
+       return(list(lambda=exp(opt$estimate[1]),alpha=opt$estimate[2:length(opt$estimate)]) )
     }
     else {
 
@@ -71,3 +72,5 @@ function (eS, starting = FALSE, lambda = 1000, alpha = 0, gradtol = 0.001,
 
 
 }
+
+

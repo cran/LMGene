@@ -15,7 +15,7 @@
 \begin{document}
 
 \title{\bf LMGene User's Guide}
-\author{Geun-Cheol Lee, John Tillinghast and David M. Rocke}
+\author{Geun-Cheol Lee, John Tillinghast, Jim Dai and David M. Rocke}
 
 \maketitle
 
@@ -31,16 +31,9 @@ a linear model and glog data transformation in the R statistical package.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data preparation}
-\texttt{LMGene}  takes objects of class \texttt{exprSet}, which is the standard data structure of the \texttt{Biobase} package.
-Hence, if data which is \texttt{exprSet} class is ready, the user can jump to further
-steps, like diagnostic plotting or g-log transformation.
-Otherwise, the user needs to generate new \texttt{exprSet} class data.
-For more detail, please see the vignette, `Textual Description of Biobase' in the \texttt{Biobase} package.
+\texttt{LMGene}  takes objects of class \texttt{expressionSet}, which is the standard data structure of the \texttt{Biobase} package. Hence, if data which is \texttt{expressionSet} class is ready, the user can jump to further steps, like diagnostic plotting or g-log transformation. Otherwise, the user needs to generate new \texttt{expressionSet} class data. For more detail, please see the vignette, `ExpressionSetIntroduction' in the \texttt{Biobase} package.
 
-{\bf Note: exprSet.} In this package, an object of \texttt{exprSet} class must contain
-\texttt{exprs} and \texttt{phenoData} slots with proper data.
-
-{\tt Example.} \texttt{LMGene} includes a sample array data which is of class {\tt exprSet}.
+{\tt Example.} \texttt{LMGene} includes a sample array data which is of class {\tt expressionSet}.
 Let's take a look this sample data.
 
 \begin{enumerate}
@@ -52,26 +45,23 @@ library(Biobase)
 library(tools)
 @
 
-\item Load the sample {\tt exprSet} class data in the package {\tt LMGene}.
+\item Load the sample {\tt expressionSet} class data in the package {\tt LMGene}.
 <<eval=TRUE, echo=TRUE>>=
 data(sample.eS)
 @
 
-\item View the data structure of the sample data and 
-the details of {\tt exprs} and {\tt phenoData} slots in the data.
+\item View the data structure of the sample data and access data elements. You can obtain a brief summary of the contents of the ExpressionSet object by printing the object. You can extract data from it using a number of functions available. For example, you can extract the expression matrix and the phenotypic data using {\tt exprs} and {\tt phenoData}, respectively.
 <<eval=TRUE, echo=TRUE>>=
-slotNames(sample.eS)
-dim(sample.eS@exprs)
-sample.eS@exprs[1:3,]
-sample.eS@phenoData
-slotNames(sample.eS@phenoData)
+sample.eS
+dim(exprs(sample.eS))
+exprs(sample.eS)[1:3,]
+phenoData(sample.eS)
+pData(sample.eS)[1:4,]
 @
 
 \end{enumerate}
 
-{\tt Data generation.} If you don't have {\tt exprSet} class data, you need to make some.
-\texttt{LMGene} provides a function that can generate an object of {\tt exprSet} class,
-assuming that there are array data of {\tt matrix} class and experimental data of {\tt list} class.
+{\tt Data generation.} If you don't have {\tt expressionSet} class data, you need to make some. \texttt{LMGene} provides a function that can generate an object of {\tt expressionSet} class, assuming that there are array data of {\tt matrix} class and experimental data of {\tt list} class.
 
 \begin{enumerate}
 
@@ -83,20 +73,18 @@ data(vlist)
 vlist
 @
 
-\item Generate {\tt exprSet} class data using {\tt neweS} function.
+\item Generate {\tt expressionSet} class data using {\tt neweS} function.
 <<eval=TRUE, echo=TRUE>>=
-test.eS<-neweS(sample.mat, vlist)
-class(test.eS)
-identical(sample.eS, test.eS)
+annotation="hgu95av2"
+test.eS<-neweS(sample.mat, vlist, annotation)
+test.eS
 @
 
 
 \end{enumerate}
 
 
-{\tt c.f.} If you have different types of array data, such as {\tt RGList}, {\tt marrayRaw}, and so on, 
-you can convert them into {\tt exprSet} class by using {\tt as} method after installing {\tt convert} package.
-
+{\tt c.f.} If you have different types of array data, such as exprSet-like class, you may convert them into {\tt ExpressionSet} class by using {\tt as} method. 
 
 
 \section{G-log transformation}
@@ -131,8 +119,8 @@ expression set can be calculated as follows.
 <<eval=TRUE, echo=TRUE>>=
 
 trsample.eS <- transeS(sample.eS, tranpar$lambda, tranpar$alpha)
-sample.eS@exprs[1:3,1:8]
-trsample.eS@exprs[1:3,1:8]
+exprs(sample.eS)[1:3,1:8]
+exprs(trsample.eS)[1:3,1:8]
 @
 
 
@@ -149,7 +137,7 @@ tranparmult
 For vector alphas, transeS uses exactly the same syntax:
 <<eval=TRUE, echo=TRUE>>=
 trsample.eS <- transeS (sample.eS, tranparmult$lambda, tranparmult$alpha)
-trsample.eS@exprs[1:3,1:8]
+exprs(trsample.eS)[1:3,1:8]
 @
 
 It's also possible to estimate the parameters using the more accurate lowess normalization (as opposed to uniform normalization):

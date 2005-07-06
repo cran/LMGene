@@ -2,13 +2,16 @@
 function (eS, model=NULL, level = 0.05 ) 
 {
     pvlist <- genediff (eS, model)
-    #Check for overfitting
+    
+#Check for overfitting
+    
     if (is.null(pvlist)) {return (NULL)}
-    #Otherwise proceed
+    
+#Otherwise proceed
     apvlist <- pvadjust(pvlist)
     numeff <- ncol(apvlist$Posterior.FDR)
     for (effnum in 1:numeff) {
-        tmp <- rowlist(eS@exprs, effnum, apvlist, level)
+        tmp <- rowlist(exprs(eS), effnum, apvlist, level)
         if (effnum == 1) {
             if (length(tmp) > 1) {
                 lmres <- list(tmp = tmp)
@@ -36,3 +39,4 @@ function (eS, model=NULL, level = 0.05 )
     }
     return(lmres)
 }
+

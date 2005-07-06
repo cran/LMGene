@@ -1,3 +1,4 @@
+% --- Source file: rowlist.Rd ---
 \name{rowlist}
 \alias{rowlist}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -34,7 +35,7 @@ rowlist(genemat, effnum, apvlist, level, posterior = TRUE)
 \references{ 
 David M. Rocke (2004), Design and analysis of experiments with high throughput biological assay data, Seminars in Cell & Developmental Biology, 15, 703-713. 
 
-\url{http://www.idav.ucdavis.edu/~dmrocke/} 
+\url{http://dmrocke.ucdavis.edu/} 
 }
 \author{ David Rocke and Geun-Cheol Lee }
 \seealso{ \code{\link{LMGene}}, \code{\link{rowaov}} }
@@ -51,7 +52,7 @@ LoggedSmpd0<-neweS(lnorm(log(sample.mat)),vlist)
 pvlist<-genediff(LoggedSmpd0)
 apvlist<-pvadjust(pvlist)
 
-genelist<-rowlist(LoggedSmpd0@exprs,2,apvlist,0.01)
+genelist<-rowlist(exprs(LoggedSmpd0),2,apvlist,0.01)
 genelist
 
 }

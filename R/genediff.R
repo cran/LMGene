@@ -15,11 +15,11 @@ function(eS, model=NULL)
 # create variables
 #
 { 
-  mat1 <- as.matrix(eS@exprs)
+  mat1 <- as.matrix(exprs(eS))
   
   if (is.null(model)) {
     model=''
-    vars <- eS@phenoData@varLabels
+    vars <- varLabels(eS)
     for (i in 1:length(vars)){
       model=paste(model, vars[i], ifelse(i<length(vars), '+', ''), sep='')
     }
@@ -35,7 +35,7 @@ function(eS, model=NULL)
   owaov <- function(y)
   {
     formobj <- as.formula(model2)
-    tmp <- row.names(anova(lm(formobj, data=eS@phenoData@pData)))
+    tmp <- row.names(anova(lm(formobj, data=pData(eS))))
     return(tmp)
   }
   effnames <- owaov(mat2[1,])
@@ -44,9 +44,12 @@ function(eS, model=NULL)
 #
   numeff <- length(effnames)
   tmp1 <- rowaov(eS, model)
-  #Check if overfit:
+  
+#Check if overfit:
+  
   if (is.null(tmp1)) {return(NULL)}
-  #Otherwise proceed
+  
+#Otherwise proceed
   msmat <- tmp1[1:numeff,]
   dfmat <- tmp1[(numeff+1):(2*numeff),]
   numf <- numeff-1
