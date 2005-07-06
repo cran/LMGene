@@ -1,5 +1,5 @@
 Package: LMGene
-Version: 1.9.0
+Version: 1.9.1
 Date: 2005-7-6
 Title: LMGene Software for Date Transformation and Identification of
         Differentially Expressed Genes in Gene Expression Arrays
@@ -11,4 +11,4 @@ Description: LMGene package for analysis of microarray data using a
         package.
 License: LGPL
 URL: http://dmrocke.ucdavi.edu/software.html
-Packaged: Fri Nov 30 15:56:29 2007; szjdai
+Packaged: Fri Dec 14 13:49:14 2007; szjdai

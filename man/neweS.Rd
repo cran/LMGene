@@ -12,7 +12,7 @@ neweS(mat, vlist, annotat, vlabel = as.list(names(vlist)))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{mat}{ A matrix data to be converted }
+  \item{mat}{ A matrix data to be converted whose column names must be unique }
   \item{vlist}{ A list which contains several factors representing the experiment description }
   \item{annotat}{ An optional character string identifying the type of chips used in the experiment }
   \item{vlabel}{ A list of labels for the variables represented by the columns of \code{pData} of the 'ExpressionSet' object to be made }

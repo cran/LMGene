@@ -50,7 +50,7 @@ library(tools)
 data(sample.eS)
 @
 
-\item View the data structure of the sample data and access data elements. You can obtain a brief summary of the contents of the ExpressionSet object by printing the object. You can extract data from it using a number of functions available. For example, you can extract the expression matrix and the phenotypic data using {\tt exprs} and {\tt phenoData}, respectively.
+\item View the data structure of the sample data and access data elements. You can obtain a brief summary of the contents of the ExpressionSet object by printing the object. You can extract data from it using a number of functions available. For example, you can extract the expression matrix and the phenotypic data using {\tt exprs} and {\tt phenoData}, respectively. Note that each column of the expression matrix has a different name.
 <<eval=TRUE, echo=TRUE>>=
 sample.eS
 dim(exprs(sample.eS))
@@ -61,7 +61,7 @@ pData(sample.eS)[1:4,]
 
 \end{enumerate}
 
-{\tt Data generation.} If you don't have {\tt expressionSet} class data, you need to make some. \texttt{LMGene} provides a function that can generate an object of {\tt expressionSet} class, assuming that there are array data of {\tt matrix} class and experimental data of {\tt list} class.
+{\tt Data generation.} If you don't have {\tt expressionSet} class data, you need to make some. \texttt{LMGene} provides a function that can generate an object of {\tt expressionSet} class, assuming that there are array data of {\tt matrix} class and experimental data of {\tt list} class. Note that the column names in the data matrix must be unique.
 
 \begin{enumerate}
 
