@@ -34,10 +34,10 @@ library(Biobase)
 library(LMGene)
 
 #data
-data(Smpd)
-dim(Smpd)
+data(sample.mat)
+dim(sample.mat)
 
-JCSmpd<-jggrad2(Smpd, 500, 50)
+JCSmpd<-jggrad2(sample.mat, 500, 50)
 dim(JCSmpd)
 
 }

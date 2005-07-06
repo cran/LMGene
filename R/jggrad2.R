@@ -17,4 +17,3 @@ function(y,lambda,alpha)
   jgl <- gl*J+g*Jl
   return(cbind(jg,jgl,jga))
 }
-

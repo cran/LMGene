@@ -6,4 +6,3 @@ function(v)
   return(v/sum(v))
   
 }
-

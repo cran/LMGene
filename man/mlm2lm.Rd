@@ -22,15 +22,15 @@ mlm2lm(lmobj, i)
 }
 \references{ \url{http://www.idav.ucdavis.edu/~dmrocke/} }
 \author{ David Rocke and Geun-Cheol Lee }
-\seealso{ \code{\link{arrplot1}}, \code{\link{arrplotd}} }
+\seealso{  }
 \examples{
 #library
 library(Biobase)
 library(LMGene)
 
 #data
-data(Smpd0)
-
+data(sample.eS)
+Smpd0 = sample.eS
 # model information 
 for(i in 1:length(Smpd0@phenoData@varLabels)){
   assign(paste('x', i, sep=''),as.factor(Smpd0@phenoData@pData[,i]))

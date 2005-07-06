@@ -35,10 +35,10 @@ library(Biobase)
 library(LMGene)
 
 #data
-data(Smpd)
-Smpd[1:5,1:4]
+data(sample.mat)
+sample.mat[1:5,1:4]
 
-GloggedSmpd<-glog(Smpd-50,500)
+GloggedSmpd<-glog(sample.mat-50,500)
 GloggedSmpd[1:5,1:4]
 
 }

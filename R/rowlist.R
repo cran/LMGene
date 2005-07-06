@@ -2,7 +2,7 @@
 function(genemat,effnum,apvlist,level,posterior=TRUE)
 #
 # genemat is an n-by-p matrix of expression values 
-# effnum is the coumn number for the effect of interest
+# effnum is the column number for the effect of interest
 # apvlist is a matrix of p-values from pvadjust or genediff
 # the routine returns a list of genes whose FDR p-value is 
 #   less than level using either individual gene or posterior 
@@ -43,4 +43,3 @@ function(genemat,effnum,apvlist,level,posterior=TRUE)
     }
   }
 }
-

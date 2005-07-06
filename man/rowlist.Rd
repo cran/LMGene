@@ -44,14 +44,14 @@ library(Biobase)
 library(LMGene)
 
 #data
-data(Smpd)
+data(sample.mat)
 data(vlist)
-LoggedSmpd0<-neweS(lnorm(log(Smpd)),vlist)
+LoggedSmpd0<-neweS(lnorm(log(sample.mat)),vlist)
 
 pvlist<-genediff(LoggedSmpd0)
 apvlist<-pvadjust(pvlist)
 
-genelist<-rowlist(LoggedSmpd0@exprs,3,apvlist,0.01)
+genelist<-rowlist(LoggedSmpd0@exprs,2,apvlist,0.01)
 genelist
 
 }

@@ -13,17 +13,22 @@
    
 }
 \usage{
-genediff(eS)
+genediff(eS, model=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{eS}{ Array data. must be a exprSet type and the log-transformation and the normalization of exprSet@exprs are recommended }
+  \item{model}{ Model used for comparison; see details and \code{\link{LMGene}}.}
 }
 \details{
   The input argument, eS, must be exprSet type from Biobase package. 
   If you have a matrix data and information about the considered factors,
   then you can use \code{\link{neweS}} to conver the data into exprSet.
   Please see \code{\link{neweS}} in more detail.
+  'model' is an optional character string, constructed like the right-hand side of a formula for lm. It specifies which of the variables in the exprSet will be used in the
+model and whether interaction terms will be included. If model=NULL, it uses all variables
+from the exprSet without interactions. Be careful of using interaction terms with factors: this often leads to overfitting, which will yield an error.
+
 }
 \value{
   \item{pvlist }{a list containing two sets of p-values obtained by gene specific MSE and the posterior MSE methods}
@@ -41,9 +46,9 @@ library(Biobase)
 library(LMGene)
 
 #data
-data(Smpd)
+data(sample.mat)
 data(vlist)
-LoggedSmpd0<-neweS(lnorm(log(Smpd)),vlist)
+LoggedSmpd0<-neweS(lnorm(log(sample.mat)),vlist)
 
 pvlist<-genediff(LoggedSmpd0)
 pvlist$Posterior[1:5,]

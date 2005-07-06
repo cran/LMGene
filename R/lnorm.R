@@ -19,4 +19,3 @@ function(mat1,span=.1)
   matnorm1 <- matnorm0[rranks,]
   return(matnorm1)
 }
-

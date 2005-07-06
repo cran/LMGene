@@ -2,7 +2,7 @@
 % likely to be overwritten.
 %
 % \VignetteIndexEntry{LMGene user's guide}
-% \VignetteDepends{Biobase, tools, multtest, genefilter, survival, splines, reposTools}
+% \VignetteDepends{Biobase, tools, multtest, survival, splines}
 
 \documentclass[11pt]{article}
 \usepackage{amsmath,pstricks,fullpage}
@@ -12,12 +12,10 @@
 \parindent 0in  % Left justify
 
 
-\usepackage{C:/texmf/Sweave}
-
 \begin{document}
 
 \title{\bf LMGene User's Guide}
-\author{Geun-Cheol Lee and David M. Rocke}
+\author{Geun-Cheol Lee, John Tillinghast and David M. Rocke}
 
 \maketitle
 
@@ -26,16 +24,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-This article introduces a short usage of \texttt{LMGene} package. 
-LMGene package has been developed mainly for analysis of microarray data using 
+This article introduces usage of the \texttt{LMGene} package. 
+LMGene has been developed mainly for analysis of microarray data using 
 a linear model and glog data transformation in the R statistical package.
-This package also provides good visual supports which give overall behavior of
-microarray data to users.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data preparation}
-\texttt{LMGene} package uses objects of \texttt{exprSet} class as its input data
-, which is the standard data sturcture of the \texttt{Biobase} package.
+\texttt{LMGene}  takes objects of class \texttt{exprSet}, which is the standard data structure of the \texttt{Biobase} package.
 Hence, if data which is \texttt{exprSet} class is ready, the user can jump to further
 steps, like diagnostic plotting or g-log transformation.
 Otherwise, the user needs to generate new \texttt{exprSet} class data.
@@ -44,7 +40,7 @@ For more detail, please see the vignette, `Textual Description of Biobase' in th
 {\bf Note: exprSet.} In this package, an object of \texttt{exprSet} class must contain
 \texttt{exprs} and \texttt{phenoData} slots with proper data.
 
-{\tt Example.} \texttt{LMGene} package includes a sample array data which is a class of {\tt exprSet}.
+{\tt Example.} \texttt{LMGene} includes a sample array data which is of class {\tt exprSet}.
 Let's take a look this sample data.
 
 \begin{enumerate}
@@ -58,40 +54,40 @@ library(tools)
 
 \item Load the sample {\tt exprSet} class data in the package {\tt LMGene}.
 <<eval=TRUE, echo=TRUE>>=
-data(Smpd0)
+data(sample.eS)
 @
 
 \item View the data structure of the sample data and 
 the details of {\tt exprs} and {\tt phenoData} slots in the data.
 <<eval=TRUE, echo=TRUE>>=
-slotNames(Smpd0)
-dim(Smpd0@exprs)
-Smpd0@exprs[1:3,]
-Smpd0@phenoData
-slotNames(Smpd0@phenoData)
+slotNames(sample.eS)
+dim(sample.eS@exprs)
+sample.eS@exprs[1:3,]
+sample.eS@phenoData
+slotNames(sample.eS@phenoData)
 @
 
 \end{enumerate}
 
-{\tt Data generation.} If you don't have {\tt exprSet} class data, you need to make one.
-\texttt{LMGene} package provides a function that can generate an object of {\tt exprSet} class,
+{\tt Data generation.} If you don't have {\tt exprSet} class data, you need to make some.
+\texttt{LMGene} provides a function that can generate an object of {\tt exprSet} class,
 assuming that there are array data of {\tt matrix} class and experimental data of {\tt list} class.
 
 \begin{enumerate}
 
-\item The package has sample array and experimental data, {\tt Smpd} and {\tt vlist}.
+\item The package has sample array and experimental data, {\tt sample.mat} and {\tt vlist}.
 <<eval=TRUE, echo=TRUE>>=
-data(Smpd)
-dim(Smpd)
+data(sample.mat)
+dim(sample.mat)
 data(vlist)  
 vlist
 @
 
 \item Generate {\tt exprSet} class data using {\tt neweS} function.
 <<eval=TRUE, echo=TRUE>>=
-Smpd1<-neweS(Smpd, vlist)
-class(Smpd1)
-identical(Smpd0, Smpd1)
+test.eS<-neweS(sample.mat, vlist)
+class(test.eS)
+identical(sample.eS, test.eS)
 @
 
 
@@ -102,108 +98,120 @@ identical(Smpd0, Smpd1)
 you can convert them into {\tt exprSet} class by using {\tt as} method after installing {\tt convert} package.
 
 
-\section{Diagnostic methods}
-{\tt LMGene} package provides several plotting functions that show the overall
-behavior of the array data.
-
-\begin{itemize}
-\item {\tt Plotting density function:} First, the package can plot the kernel density of each channel in the array data.
-Before the plotting, the data is log-trasformed and normalized.
-<<eval=TRUE, echo=TRUE, fig=TRUE>>=
-rgplot(Smpd0)
-@
-\item {\tt Smoothed histogram:} 
-To evaluate the overall sources of variation in the array data produced in this study, 
-we use a visual tool. Before making data for the plotting, 
-we perform the analysis of variance (ANOVA) for each gene considering all factors.
-Using this analysis, relative mean square values of the factors (including error factor) for all genes can be obtained
- and the overall results of the data can be presented with a smoothed histogram.
-<<eval=TRUE, echo=TRUE, fig=TRUE>>=
-arrplotd(Smpd0)
-@
- 
-\item {\tt Cumulative frequency distribution:} The same results of the relative mean square values from the previous analysis,
-a different graph, cumulative frequency distribution, can be plotted.
-<<eval=TRUE, echo=TRUE, fig=TRUE>>=
-arrplote(Smpd0)
-@
-
-\end{itemize}
-
 
 \section{G-log transformation}
 \begin{enumerate}
 \item {\tt Estimating parameters for g-log transformation.} 
-Estimate the parameters ${\lambda}$ and ${\alpha}$ of the generalized log
-   transform ${\log{(y - {\alpha} + {\sqrt{(y - {\alpha})^2 + {\lambda}}})}}$. Using the
-   function tranest0 as follows
+The linear model is not applied to the raw data, but to transformed and normalized data. Many people use a log transform. LMGene uses a log-like transform involving two parameters. We estimate the parameters ${\lambda}$ and ${\alpha}$ of the generalized log
+   transform ${\log{(y - {\alpha} + {\sqrt{(y - {\alpha})^2 + {\lambda}}})} = \sinh^{-1}(\frac{y-\alpha}{\lambda})}+\log(\lambda)$ using the
+   function tranest as follows:
 
 <<eval=TRUE, echo=TRUE>>=
-   tranpar <- tranest(Smpd0)
+   tranpar <- tranest(sample.eS)
    tranpar
 @
 
    The optional parameter {\tt ngenes} controls how many genes are used in
-   the estimation. the default is all of them, but it may be
-   impractical in some cases. A typical call using this parameter
+   the estimation. The default is all of them (up to 100,000), but this option allows the use of less. A typical call using this parameter
    would be
 
 <<eval=TRUE, echo=TRUE>>=
-   tranpar <- tranest(Smpd0, 100)
+   tranpar <- tranest(sample.eS, 100)
    tranpar
 @
 
    In this case, 100 genes are chosen at random and used to estimate
    the transformation parameter. The routine returns a list
    containing values for lambda and alpha.
-   
-\item {\tt G-log transformation.} Using the obtained two parameters, g-log transformed
-array data ({\tt matrix} class) can be calculated as follows.
-<<eval=TRUE, echo=TRUE>>=
-Smpd[1:3,]
-Glogged <- glog(Smpd-tranpar$alpha,tranpar$lambda)
-Glogged[1:3,]
-@
-\end{enumerate}
 
-Execution time for tranest and lmgene can be substantial, up to
-   several hours, depending on the size of the data set and the choice
-   (for tranest) of the parameter ngenes. It may be worthwhile to try
-   tranest first with a relatively small number of genes or probes,
-   say 100-1000, to check execution time before starting with the full
-   set of genes/probes.
+
    
+\item {\tt G-log transformation.} Using the obtained two parameters, the g-log transformed
+expression set can be calculated as follows.
+<<eval=TRUE, echo=TRUE>>=
+
+trsample.eS <- transeS(sample.eS, tranpar$lambda, tranpar$alpha)
+sample.eS@exprs[1:3,1:8]
+trsample.eS@exprs[1:3,1:8]
+@
+
+
+\item {\tt Tranest options: multiple alpha, lowessnorm, model}
+
+Rather than using a single alpha for all samples, we can estimate a separate alpha for each sample. This allows for differences in chips, in sample concentration, or exposure conditions. 
+
+<<eval=TRUE, echo=TRUE>>=
+tranparmult <- tranest(sample.eS, mult=TRUE) 
+tranparmult
+@
+
+
+For vector alphas, transeS uses exactly the same syntax:
+<<eval=TRUE, echo=TRUE>>=
+trsample.eS <- transeS (sample.eS, tranparmult$lambda, tranparmult$alpha)
+trsample.eS@exprs[1:3,1:8]
+@
+
+It's also possible to estimate the parameters using the more accurate lowess normalization (as opposed to uniform normalization):
+
+<<eval=TRUE, echo=TRUE>>=
+tranparmult <- tranest(sample.eS, ngenes=100, mult=TRUE, lowessnorm=TRUE) 
+tranparmult
+@
+
+
+It is even possible now to estimate parameters using a specified model. For example, if we think that the interaction of variables in vlist is important, we can add interaction to the model:
+
+<<eval=TRUE, echo=TRUE>>=
+   tranpar <- tranest(sample.eS, model='patient + dose + patient:dose')
+   tranpar
+@
+
+The model is always specified in the same way as the right-hand side of an lm model. In the example above, we set the parameters to minimize the mean squared error for a regression of transformed gene expression against patient, log dose, and their interaction.
+
+Be very careful of using interactions between factor variables. If you do not have enough replications, you can easily overfit the data and have no errors to work with.
+
+Naturally, it's possible to use mult, lowessnorm, and model all together.
+
+
+\end{enumerate}   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Finding differentially expressed genes}
 
 \begin{enumerate}
 \item {\tt Transformation and Normalization.} Before finding differentially expressed genes,
-the array data needs to be log-like transformed and normalized. Thus, we first 
-generate {\tt exprSet} class data which contains g-log transformed and lowess normalized array matrix data.
+the array data needs to be transformed and normalized. 
+
 <<eval=TRUE, echo=TRUE>>=
-Glogged <- glog(Smpd-tranpar$alpha,tranpar$lambda)
-LLdGlogged<-lnorm(Glogged)
-Smpd2<-neweS(LLdGlogged,vlist)
+trsample.eS <- transeS (sample.eS, tranparmult$lambda, tranparmult$alpha)
+ntrsample.eS <- lnormeS (trsample.eS) 
 @
    
 \item {\tt Finding differentially expressed genes} 
-The lmgene routine computes significant genes using the method of
+The lmgene routine computes significant probes using the method of
    Rocke (2003). A typical call would be
 
 <<eval=TRUE, echo=TRUE>>=
-   siggenes <- LMGene(Smpd2)
+   sigprobes <- LMGene(ntrsample.eS)
 @
   There
    is an optional argument, level, which is the test level, .05 by
-   default. A call using this optional parameter would by typically
+   default. A call using this optional parameter would look like
 
 <<eval=TRUE, echo=TRUE>>=
-   siggenes <- LMGene(Smpd2,.01)
+   sigprobes <- LMGene(ntrsample.eS,level=.01)
 @
-   The result is a list whose components have the effect names in the
-   model that have any significant genes, and have as values the
-   significant genes for the test of that effect or else the message
-   "No significant genes".
+   The result is a list whose components have the names of the effects in the
+   model. The values are the significant genes for the test of that effect or else the   
+   message "No significant genes".
+
+As with tranest, it's possible to specify a more complex model to LMGene:
+
+<<eval=TRUE, echo=TRUE>>=
+sigprobes <- LMGene(ntrsample.eS, model='patient+dose+patient:dose')
+sigprobes
+@
+
 
 \end{enumerate}
 

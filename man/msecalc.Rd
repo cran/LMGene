@@ -7,7 +7,7 @@
   Computes the mean square error and gradient for the global anova
 }
 \usage{
-msecalc(eS, lam, alpha, lowessnorm)
+msecalc(eS, lam, alpha, lowessnorm, R)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -15,6 +15,7 @@ msecalc(eS, lam, alpha, lowessnorm)
   \item{lam}{ A parameter for glog transformation }
   \item{alpha}{ A parameter for glog transformation }
   \item{lowessnorm}{ TRUE, if lowess method is going to be used }
+  \item{R}{ The residual matrix, i.e., identity minus the hat matrix}
 }
 \details{
   The input argument, eS, must be exprSet type from Biobase package. 
@@ -38,9 +39,16 @@ library(Biobase)
 library(LMGene)
 
 #data
-data(Smpd0)
+data(sample.eS)
 
-msecalc(Smpd0,500,50, FALSE)
+lmod <- GetLMObj(sample.eS)
+X <- lmod$x
+U <- svd(X)$u
+H = crossprod(t(U), t(U))
+n = dim(H)[1]
+R = diag(rep(1,n)) - H
+
+msecalc(sample.eS,500,50, FALSE, R)
 
 }
 \keyword{ math }% at least one, from doc/KEYWORDS

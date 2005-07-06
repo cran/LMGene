@@ -9,4 +9,3 @@ function(lmobj,i)
   class(lmobj2) <- "lm"
   return(lmobj2)
 }
-

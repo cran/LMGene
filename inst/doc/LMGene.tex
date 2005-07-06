@@ -1,0 +1,444 @@
+% NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
+% likely to be overwritten.
+%
+% \VignetteIndexEntry{LMGene user's guide}
+% \VignetteDepends{Biobase, tools, multtest, survival, splines}
+
+\documentclass[11pt]{article}
+\usepackage{amsmath,pstricks,fullpage}
+\usepackage{hyperref}
+
+
+\parindent 0in  % Left justify
+
+
+\usepackage{/usr/lib64/R/share/texmf/Sweave}
+\begin{document}
+
+\title{\bf LMGene User's Guide}
+\author{Geun-Cheol Lee, John Tillinghast and David M. Rocke}
+
+\maketitle
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+This article introduces usage of the \texttt{LMGene} package. 
+LMGene has been developed mainly for analysis of microarray data using 
+a linear model and glog data transformation in the R statistical package.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data preparation}
+\texttt{LMGene}  takes objects of class \texttt{exprSet}, which is the standard data structure of the \texttt{Biobase} package.
+Hence, if data which is \texttt{exprSet} class is ready, the user can jump to further
+steps, like diagnostic plotting or g-log transformation.
+Otherwise, the user needs to generate new \texttt{exprSet} class data.
+For more detail, please see the vignette, `Textual Description of Biobase' in the \texttt{Biobase} package.
+
+{\bf Note: exprSet.} In this package, an object of \texttt{exprSet} class must contain
+\texttt{exprs} and \texttt{phenoData} slots with proper data.
+
+{\tt Example.} \texttt{LMGene} includes a sample array data which is of class {\tt exprSet}.
+Let's take a look this sample data.
+
+\begin{enumerate}
+
+\item First, load the necessary packages in your R session.
+\begin{Schunk}
+\begin{Sinput}
+> library(LMGene)
+\end{Sinput}
+\begin{Soutput}
+Loading required package: Biobase
+Loading required package: multtest
+Loading required package: survival
+Loading required package: splines
+Loading required package: survival
+\end{Soutput}
+\begin{Sinput}
+> library(Biobase)
+> library(tools)
+\end{Sinput}
+\end{Schunk}
+
+\item Load the sample {\tt exprSet} class data in the package {\tt LMGene}.
+\begin{Schunk}
+\begin{Sinput}
+> data(sample.eS)
+\end{Sinput}
+\end{Schunk}
+
+\item View the data structure of the sample data and 
+the details of {\tt exprs} and {\tt phenoData} slots in the data.
+\begin{Schunk}
+\begin{Sinput}
+> slotNames(sample.eS)
+\end{Sinput}
+\begin{Soutput}
+[1] "exprs"        "se.exprs"     "description"  "annotation"   "notes"       
+[6] "reporterInfo" "phenoData"   
+\end{Soutput}
+\begin{Sinput}
+> dim(sample.eS@exprs)
+\end{Sinput}
+\begin{Soutput}
+[1] 613  32
+\end{Soutput}
+\begin{Sinput}
+> sample.eS@exprs[1:3, ]
+\end{Sinput}
+\begin{Soutput}
+   p1d0 p1d1 p1d2 p1d3 p2d0 p2d1 p2d2 p2d3 p3d0 p3d1 p3d2 p3d3 p4d0 p4d1 p4d2
+g1  216  149  169  113  193  172  167  168  151  179  142  156  160  214  157
+g2  334  311  187  135  514  471  219  394  367  390  365  387  318  378  329
+g3  398  367  351  239  712  523  356  629  474  438  532  427  429  574  419
+   p4d3 p5d0 p5d1 p5d2 p5d3 p6d0 p6d1 p6d2 p6d3 p7d0 p7d1 p7d2 p7d3 p8d0 p8d1
+g1  195  165  144  185  162  246  227  173  151  796  378  177  278  183  285
+g2  450  293  285  390  428  645  631  324  343  852  451  259  379  259  386
+g3  564  438  321  519  488  824  579  416  489 1046  501  375  388  373  509
+   p8d2 p8d3
+g1  275  202
+g2  361  333
+g3  468  436
+\end{Soutput}
+\begin{Sinput}
+> sample.eS@phenoData
+\end{Sinput}
+\begin{Soutput}
+	 phenoData object with 2 variables and 32 cases
+	 varLabels
+		patient: patient
+		dose: dose
+\end{Soutput}
+\begin{Sinput}
+> slotNames(sample.eS@phenoData)
+\end{Sinput}
+\begin{Soutput}
+[1] "pData"       "varLabels"   "varMetadata"
+\end{Soutput}
+\end{Schunk}
+
+\end{enumerate}
+
+{\tt Data generation.} If you don't have {\tt exprSet} class data, you need to make some.
+\texttt{LMGene} provides a function that can generate an object of {\tt exprSet} class,
+assuming that there are array data of {\tt matrix} class and experimental data of {\tt list} class.
+
+\begin{enumerate}
+
+\item The package has sample array and experimental data, {\tt sample.mat} and {\tt vlist}.
+\begin{Schunk}
+\begin{Sinput}
+> data(sample.mat)
+> dim(sample.mat)
+\end{Sinput}
+\begin{Soutput}
+[1] 613  32
+\end{Soutput}
+\begin{Sinput}
+> data(vlist)
+> vlist
+\end{Sinput}
+\begin{Soutput}
+$patient
+ [1] 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 6 6 6 6 7 7 7 7 8 8 8 8
+Levels: 1 2 3 4 5 6 7 8
+
+$dose
+ [1] 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3
+\end{Soutput}
+\end{Schunk}
+
+\item Generate {\tt exprSet} class data using {\tt neweS} function.
+\begin{Schunk}
+\begin{Sinput}
+> test.eS <- neweS(sample.mat, vlist)
+> class(test.eS)
+\end{Sinput}
+\begin{Soutput}
+[1] "exprSet"
+attr(,"package")
+[1] "Biobase"
+\end{Soutput}
+\begin{Sinput}
+> identical(sample.eS, test.eS)
+\end{Sinput}
+\begin{Soutput}
+[1] TRUE
+\end{Soutput}
+\end{Schunk}
+
+
+\end{enumerate}
+
+
+{\tt c.f.} If you have different types of array data, such as {\tt RGList}, {\tt marrayRaw}, and so on, 
+you can convert them into {\tt exprSet} class by using {\tt as} method after installing {\tt convert} package.
+
+
+
+\section{G-log transformation}
+\begin{enumerate}
+\item {\tt Estimating parameters for g-log transformation.} 
+The linear model is not applied to the raw data, but to transformed and normalized data. Many people use a log transform. LMGene uses a log-like transform involving two parameters. We estimate the parameters ${\lambda}$ and ${\alpha}$ of the generalized log
+   transform ${\log{(y - {\alpha} + {\sqrt{(y - {\alpha})^2 + {\lambda}}})} = \sinh^{-1}(\frac{y-\alpha}{\lambda})}+\log(\lambda)$ using the
+   function tranest as follows:
+
+\begin{Schunk}
+\begin{Sinput}
+> tranpar <- tranest(sample.eS)
+> tranpar
+\end{Sinput}
+\begin{Soutput}
+$lambda
+[1] 726.6187
+
+$alpha
+[1] 56.02754
+\end{Soutput}
+\end{Schunk}
+
+   The optional parameter {\tt ngenes} controls how many genes are used in
+   the estimation. The default is all of them (up to 100,000), but this option allows the use of less. A typical call using this parameter
+   would be
+
+\begin{Schunk}
+\begin{Sinput}
+> tranpar <- tranest(sample.eS, 100)
+> tranpar
+\end{Sinput}
+\begin{Soutput}
+$lambda
+[1] 874.2464
+
+$alpha
+[1] 55.54313
+\end{Soutput}
+\end{Schunk}
+
+   In this case, 100 genes are chosen at random and used to estimate
+   the transformation parameter. The routine returns a list
+   containing values for lambda and alpha.
+
+
+   
+\item {\tt G-log transformation.} Using the obtained two parameters, the g-log transformed
+expression set can be calculated as follows.
+\begin{Schunk}
+\begin{Sinput}
+> trsample.eS <- transeS(sample.eS, tranpar$lambda, tranpar$alpha)
+> sample.eS@exprs[1:3, 1:8]
+\end{Sinput}
+\begin{Soutput}
+   p1d0 p1d1 p1d2 p1d3 p2d0 p2d1 p2d2 p2d3
+g1  216  149  169  113  193  172  167  168
+g2  334  311  187  135  514  471  219  394
+g3  398  367  351  239  712  523  356  629
+\end{Soutput}
+\begin{Sinput}
+> trsample.eS@exprs[1:3, 1:8]
+\end{Sinput}
+\begin{Soutput}
+       p1d0     p1d1     p1d2     p1d3     p2d0     p2d1     p2d2     p2d3
+g1 5.779555 5.254781 5.441132 4.804638 5.627829 5.466407 5.423932 5.432568
+g2 6.325217 6.239533 5.584240 5.101309 6.822052 6.723790 5.797778 6.519446
+g3 6.531151 6.436654 6.384164 5.911558 7.180511 6.841453 6.400864 7.045494
+\end{Soutput}
+\end{Schunk}
+
+
+\item {\tt Tranest options: multiple alpha, lowessnorm, model}
+
+Rather than using a single alpha for all samples, we can estimate a separate alpha for each sample. This allows for differences in chips, in sample concentration, or exposure conditions. 
+
+\begin{Schunk}
+\begin{Sinput}
+> tranparmult <- tranest(sample.eS, mult = TRUE)
+> tranparmult
+\end{Sinput}
+\begin{Soutput}
+$lambda
+[1] 689.2819
+
+$alpha
+ [1]  69.67146  37.02711  54.13904  69.35728  60.33270  60.75301  71.72965
+ [8]  64.55506  58.63427  65.73625  48.40173  59.43778  76.34568  78.81046
+[15]  82.20326  96.19938  77.60070  79.48089  73.63257  73.41650  33.86029
+[22]  69.26448  55.75460  54.29840 139.89493  91.36521  46.46158  59.02056
+[29]  73.60255  89.48728  57.13887  64.98866
+\end{Soutput}
+\end{Schunk}
+
+
+For vector alphas, transeS uses exactly the same syntax:
+\begin{Schunk}
+\begin{Sinput}
+> trsample.eS <- transeS(sample.eS, tranparmult$lambda, tranparmult$alpha)
+> trsample.eS@exprs[1:3, 1:8]
+\end{Sinput}
+\begin{Soutput}
+       p1d0     p1d1     p1d2     p1d3     p2d0     p2d1     p2d2     p2d3
+g1 5.686954 5.424873 5.449682 4.549380 5.590642 5.418542 5.268332 5.347915
+g2 6.272797 6.308464 5.592073 4.915159 6.811348 6.710929 5.693269 6.492140
+g3 6.488757 6.493737 6.388361 5.832776 7.173087 6.830052 6.345199 7.029530
+\end{Soutput}
+\end{Schunk}
+
+It's also possible to estimate the parameters using the more accurate lowess normalization (as opposed to uniform normalization):
+
+\begin{Schunk}
+\begin{Sinput}
+> tranparmult <- tranest(sample.eS, ngenes = 100, mult = TRUE, 
++     lowessnorm = TRUE)
+> tranparmult
+\end{Sinput}
+\begin{Soutput}
+$lambda
+[1] 655.1817
+
+$alpha
+ [1]  72.33459  54.85916  59.95882  67.84961  65.76304  72.80078  74.63962
+ [8]  59.91484  54.35704  69.41260  71.14899  62.35461  61.59616  75.55289
+[15]  59.27235  86.55559  61.67145  59.51983  63.81498  62.58284  60.05210
+[22]  99.95130  58.68123  61.70271 171.23313 119.38508  57.23296  73.56054
+[29]  65.25109  98.40390  67.89693  63.68758
+\end{Soutput}
+\end{Schunk}
+
+
+It is even possible now to estimate parameters using a specified model. For example, if we think that the interaction of variables in vlist is important, we can add interaction to the model:
+
+\begin{Schunk}
+\begin{Sinput}
+> tranpar <- tranest(sample.eS, model = "patient + dose + patient:dose")
+> tranpar
+\end{Sinput}
+\begin{Soutput}
+$lambda
+[1] 860.0836
+
+$alpha
+[1] 55.68625
+\end{Soutput}
+\end{Schunk}
+
+The model is always specified in the same way as the right-hand side of an lm model. In the example above, we set the parameters to minimize the mean squared error for a regression of transformed gene expression against patient, log dose, and their interaction.
+
+Be very careful of using interactions between factor variables. If you do not have enough replications, you can easily overfit the data and have no errors to work with.
+
+Naturally, it's possible to use mult, lowessnorm, and model all together.
+
+
+\end{enumerate}   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Finding differentially expressed genes}
+
+\begin{enumerate}
+\item {\tt Transformation and Normalization.} Before finding differentially expressed genes,
+the array data needs to be transformed and normalized. 
+
+\begin{Schunk}
+\begin{Sinput}
+> trsample.eS <- transeS(sample.eS, tranparmult$lambda, tranparmult$alpha)
+> ntrsample.eS <- lnormeS(trsample.eS)
+\end{Sinput}
+\end{Schunk}
+   
+\item {\tt Finding differentially expressed genes} 
+The lmgene routine computes significant probes using the method of
+   Rocke (2003). A typical call would be
+
+\begin{Schunk}
+\begin{Sinput}
+> sigprobes <- LMGene(ntrsample.eS)
+\end{Sinput}
+\end{Schunk}
+  There
+   is an optional argument, level, which is the test level, .05 by
+   default. A call using this optional parameter would look like
+
+\begin{Schunk}
+\begin{Sinput}
+> sigprobes <- LMGene(ntrsample.eS, level = 0.01)
+\end{Sinput}
+\end{Schunk}
+   The result is a list whose components have the names of the effects in the
+   model. The values are the significant genes for the test of that effect or else the   
+   message "No significant genes".
+
+As with tranest, it's possible to specify a more complex model to LMGene:
+
+\begin{Schunk}
+\begin{Sinput}
+> sigprobes <- LMGene(ntrsample.eS, model = "patient+dose+patient:dose")
+> sigprobes
+\end{Sinput}
+\begin{Soutput}
+$patient
+ [1] "g2"   "g3"   "g9"   "g10"  "g14"  "g15"  "g49"  "g54"  "g84"  "g85" 
+[11] "g86"  "g93"  "g102" "g123" "g139" "g155" "g178" "g179" "g205" "g250"
+[21] "g256" "g271" "g277" "g304" "g310" "g319" "g327" "g336" "g372" "g375"
+[31] "g384" "g399" "g405" "g406" "g407" "g408" "g409" "g410" "g411" "g412"
+[41] "g413" "g414" "g415" "g423" "g425" "g460" "g461" "g462" "g463" "g477"
+[51] "g503" "g520" "g524" "g528" "g566" "g607" "g612"
+
+$dose
+[1] "No significant genes"
+
+$`patient:dose`
+[1] "No significant genes"
+\end{Soutput}
+\end{Schunk}
+
+
+\end{enumerate}
+
+The routine LMGene requires the multtest package. 
+
+\bibliographystyle{plain}
+\begin{thebibliography}{99}
+
+\bibitem{1}  
+Durbin, B.P., Hardin, J.S., Hawkins, D.M., and Rocke, D.M. (2002) ``A
+variance-stabilizing transformation for gene-expression microarray
+data,'' \emph{Bioinformatics}, {\bf18}, S105--S110.
+
+\bibitem{2} 
+Durbin, B. and Rocke, D. M. (2003a) ``Estimation of transformation
+parameters for microarray data,'' \emph{Bioinformatics}, {\bf19}, 1360--1367.
+
+\bibitem{3} 
+Durbin, B. and Rocke, D. M. (2003b) ``Exact and approximate
+variance-stabilizing transformations for two-color microarrays,''
+submitted for publication.
+
+\bibitem{4} 
+Geller, S.C., Gregg, J.P., Hagerman, P.J., and Rocke, D.M. (2003)
+``Transformation and normalization of oligonucleotide microarray
+data,'' \emph{Bioinformatics}, {\bf19}, 1817--1823.
+
+\bibitem{5} 
+Rocke, David M. (2004) ``Design and Analysis of Experiments with High Throughput Biological Assay Data,'' 
+\emph{Seminars in Cell and Developmental Biology },
+{\bf15}, 708--713.
+
+\bibitem{6} 
+Rocke, D., and Durbin, B. (2001) ``A model for measurement error for
+gene expression arrays,'' \emph{Journal of Computational Biology},
+{\bf8}, 557--569.
+
+\bibitem{7} 
+Rocke, D. and Durbin, B. (2003) ``Approximate
+variance-stabilizing transformations for gene-expression microarray
+data,'' \emph{Bioinformatics}, {\bf19}, 966--972.
+
+\end{thebibliography}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+

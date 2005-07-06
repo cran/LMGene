@@ -3,7 +3,7 @@
 \docType{data}
 \title{ Sample experimental data for LMGene package}
 \description{
-  A list data representing experiment description information for the sample matrix array data, 'Smpd'.
+  A list data representing experiment description information for the sample matrix array data, 'sample.mat'.
 }
 \usage{data(vlist)}
 \examples{

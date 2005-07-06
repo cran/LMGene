@@ -9,4 +9,3 @@ function(mat1)
   mnmat <- matrix(rep(cmean,p),byrow=TRUE,ncol=n)
   return(mat2-mnmat)
 }
-

@@ -16,7 +16,7 @@ neweS(mat, vlist, vlabel = as.list(names(vlist)))
   \item{vlabel}{ A list of labels for the variables represented by the columns of \code{pData} of the 'exprSet' object to be made }
 }
 \details{
-  Must load Biobas package first for converting. \cr
+  Must load Biobase package first for converting. \cr
   \code{vlist} contains all the considered factors in which level values of each element represent the corresponding column of \code{mat}.
 }
 \value{
@@ -24,20 +24,20 @@ neweS(mat, vlist, vlabel = as.list(names(vlist)))
 }
 \references{ \url{http://www.idav.ucdavis.edu/~dmrocke/} }
 \author{ David Rocke and Geun-Cheol Lee }
-\seealso{ \code{\link{as}} }
+\seealso{ \code{\link[methods]{as}} }
 \examples{
 #library
 library(Biobase)
 library(LMGene)
 
 #data
-data(Smpd)
+data(sample.mat)
 data(vlist)
 
-Smpdt<-neweS(Smpd,vlist)
+Smpdt<-neweS(sample.mat,vlist)
 
-data(Smpd0)
-identical(Smpd0, Smpdt)
+data(sample.eS)
+identical(sample.eS, Smpdt)
 
 }
 \keyword{ manip }% at least one, from doc/KEYWORDS

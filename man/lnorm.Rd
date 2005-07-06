@@ -28,8 +28,8 @@ library(Biobase)
 library(LMGene)
 
 #data
-data(Smpd)
-LoggedSmpd<-lnorm(log(Smpd))
+data(sample.mat)
+LoggedSmpd<-lnorm(log(sample.mat))
 
 }
 \keyword{ math }% at least one, from doc/KEYWORDS

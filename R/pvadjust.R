@@ -21,4 +21,3 @@ function(pvlist)
   pvlist2 <- c(pvlist,list("Gene.Specific.FDR"=pv1,"Posterior.FDR"=pv2))
   return(pvlist2)
 }
-

@@ -33,9 +33,9 @@ library(Biobase)
 library(LMGene)
 
 #data
-data(Smpd)
+data(sample.mat)
 data(vlist)
-LoggedSmpd0<-neweS(lnorm(log(Smpd)),vlist)
+LoggedSmpd0<-neweS(lnorm(log(sample.mat)),vlist)
 
 pvlist<-genediff(LoggedSmpd0)
 pvlist$Posterior[1:5,]

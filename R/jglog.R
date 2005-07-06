@@ -7,4 +7,3 @@ function(y,lambda)
   y1 <- y1*gmn
   return(y1)
 }
-

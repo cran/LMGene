@@ -9,11 +9,12 @@
   
 }
 \usage{
-LMGene(eS, level = 0.05)
+LMGene(eS, model=NULL, level = 0.05)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{eS}{ Array data. must be exprSet type and the log-transformation and the normalization of exprSet@exprs are recommended. }
+  \item{model}{Specifies model to be used. Default is to use all variables from eS without interactions. See details.}
   \item{level}{ Significance level }
 }
 \details{
@@ -22,7 +23,11 @@ LMGene(eS, level = 0.05)
   then you can use \code{\link{neweS}} to conver the data into exprSet.
   Please see \code{\link{neweS}} in more detail.
   \cr
-  \code{level} indicates False Discovery Rate. e.g.) level 0.05 means 5% FDR.
+  \code{level} indicates False Discovery Rate, e.g. level=0.05 means 5% FDR.
+
+  'model' is an optional character string, constructed like the right-hand side of a formula for lm. It specifies which of the variables in the exprSet will be used in the
+model and whether interaction terms will be included. If model=NULL, it uses all variables
+from the exprSet without interactions. Be careful of using interaction terms with factors: this often leads to overfitting, which will yield an error.
 }
 \value{
   \item{lmres }{ A list which contains significant gene names for each considered factor}
@@ -40,12 +45,11 @@ library(Biobase)
 library(LMGene)
 
 #data
-data(Smpd)
+data(sample.mat)
 data(vlist)
-LoggedSmpd0<-neweS(lnorm(log(Smpd)),vlist)
+LoggedSample<-neweS(lnorm(log(sample.mat)),vlist)
 
-siggeneslist<-LMGene(LoggedSmpd0, 0.01)
-siggeneslist$x3
+siggeneslist<-LMGene(LoggedSample, 'patient + dose', 0.01)
 
 }
 \keyword{ models }% at least one, from doc/KEYWORDS
