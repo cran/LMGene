@@ -1,4 +1,4 @@
-"GetLMObj" <-
+GetLMObj <-
 function (eS, model=NULL) 
 {
   mat1 <- as.matrix(exprs(eS))

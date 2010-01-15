@@ -1,4 +1,4 @@
-"msecalcmult" <-
+msecalcmult <-
 function (eS, lam, alpha, lowessnorm=FALSE, R, grads=TRUE) 
 {
     lambda <- FALSE

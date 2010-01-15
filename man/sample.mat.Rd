@@ -3,14 +3,13 @@
 \docType{data}
 \title{ Sample array data for LMGene package}
 \description{
-  A matrix of array data
+  A \code{matrix} of array data
 }
 \usage{data(sample.mat)}
 \format{
-  A data frame measuring 613 probes on the 32 samples.
+  A \code{matrix} measuring 613 rows (probes) by 32 columns (samples).
 }
 \examples{
-#library
 library(Biobase)
 library(LMGene)
 
@@ -21,6 +20,7 @@ data(vlist)
 Smpdt<-neweS(sample.mat,vlist)
 
 data(sample.eS)
-identical(sample.eS, Smpdt)
+identical(exprs(sample.eS), exprs(Smpdt))
+identical(pData(sample.eS), pData(Smpdt))
 }
 \keyword{datasets}

@@ -1,7 +1,7 @@
-"rowlist" <-
-function(genemat,effnum,apvlist,level,posterior=TRUE)
+rowlist <-
+function(genemat,effnum,apvlist,level,posterior=FALSE)
 #
-# genemat is an n-by-p matrix of expression values 
+# genemat is a p by n matrix of expression values 
 # effnum is the column number for the effect of interest
 # apvlist is a matrix of p-values from pvadjust or genediff
 # the routine returns a list of genes whose FDR p-value is 

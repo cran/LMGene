@@ -1,4 +1,4 @@
-"msa" <-
+msa <-
 function(v)
 {
   tmp <- sum(v^2)

@@ -1,12 +1,12 @@
-#Estimates parameters for the glog transformation, by maximum 
-#likelihood or by minimizing the stability score.
-tranest <- 
-function (eS, ngenes = -1, starting = FALSE, lambda = 1000, alpha = 0,
+#Estimates parameters for the glog transformation on probe-level 
+#Affymetrix expression data, by maximum likelihood or by #minimizing the stability score.
+tranestAffyProbeLevel <-
+function (eS, ngenes = 5000, starting = FALSE, lambda = 1000, alpha = 0,
     gradtol = 1e-3, lowessnorm = FALSE, method=1, mult=FALSE, model=NULL, 
 	SD = FALSE, rank = TRUE, model.based = TRUE, rep.arrays = NULL)
 {
-    if (class(eS) != "ExpressionSet"){
-	stop("'eS' must be an object of class 'ExpressionSet'")
+    if (class(eS) != 'AffyBatch'){
+	stop("'eS' must be an object of class 'AffyBatch'")
     }
     if (SD == TRUE && mult == TRUE){
 	warning('estimation of vector alpha not implemented
@@ -52,20 +52,18 @@ function (eS, ngenes = -1, starting = FALSE, lambda = 1000, alpha = 0,
     if (!identical(unlist(rep.arrays), unique(unlist(rep.arrays)))){
 		stop("elements of 'rep.arrays' may not overlap")
     }
+    fnames <- featureNames(eS)
+    p <- length(fnames)
+    ind <- sample(p, ngenes)
+    pmData <- pm(eS, fnames[ind])
 
-    mat1 <- as.matrix(exprs(eS))
-    n <- dim(mat1)[2]
-    p <- dim(mat1)[1]
+    eS2 <- eS
+    exprs(eS2) <- pmData
 
+    n <- dim(exprs(eS2))[1]
     if (length(alpha) > 1 && length(alpha)!= n){
 	stop("vector alpha must have length equal to number of arrays")
     }
-
-    if (p > 100000) {ngenes <- 50000}
-    if ((ngenes < p) & (ngenes > 0))
-        mat2 <- mat1[sample(p, ngenes), ]
-    else mat2 <- mat1
-    eS2 <- new("ExpressionSet", exprs = mat2, phenoData = phenoData(eS))
 
     if (mult==FALSE) {
       tranpar <- tranest2(eS2, starting, lambda, alpha, gradtol,

@@ -1,33 +1,37 @@
 \name{norm}
 \alias{norm}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{ Additive normalization function
+\title{Normalization function
  }
 \description{
-  This function normalizes the matrix in additive way.
+  This function normalizes a matrix by subtracting the column (sample) mean from each element and adding the grand mean.
 }
 \usage{
 norm(mat1)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{mat1}{ A matrix data to be normalized }
+  \item{mat1}{ A \code{matrix} to be normalized }
 }
 \value{
-  \item{matnorm }{Normalized matrix}
+  \item{matnorm}{Normalized \code{matrix}}
 }
-\references{ \url{http://www.idav.ucdavis.edu/~dmrocke/} }
+\references{ \url{http://dmrocke.ucdavis.edu} }
 \author{ David Rocke and Geun-Cheol Lee }
-\seealso{ \code{\link{lnorm}} }
+\seealso{ \code{\link{lnorm}}}
 \examples{
-#library
 library(Biobase)
 library(LMGene)
 
 #data
 data(sample.mat)
-LoggedSmpd<-norm(log(sample.mat))
+data(vlist)
 
+raw.eS <- neweS(sample.mat, vlist)
+
+# glog transform data
+trans.eS <- transeS(raw.eS, lambda = 727, alpha = 56)
+
+# normalize
+normed.exprs <- norm(exprs(trans.eS))
 }
-\keyword{ math }% at least one, from doc/KEYWORDS
+
 

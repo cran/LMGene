@@ -1,4 +1,4 @@
-"mlm2lm" <-
+mlm2lm <-
 function(lmobj,i)
 {
   lmobj2 <- lmobj

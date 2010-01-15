@@ -1,8 +1,8 @@
 % NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
 % likely to be overwritten.
 %
-% \VignetteIndexEntry{LMGene user's guide}
-% \VignetteDepends{Biobase, tools, multtest, survival, splines}
+%\VignetteIndexEntry{LMGene User's Guide}
+%\VignetteDepends{Biobase, tools, multtest, survival, splines}
 
 \documentclass[11pt]{article}
 \usepackage{amsmath,fullpage}
@@ -15,7 +15,7 @@
 \begin{document}
 
 \title{\bf LMGene User's Guide}
-\author{Geun-Cheol Lee, John Tillinghast and David M. Rocke}
+\author{Geun-Cheol Lee, John Tillinghast, and David M. Rocke}
 
 \maketitle
 
@@ -25,23 +25,22 @@
 \section{Introduction}
 
 This article introduces usage of the \texttt{LMGene} package. 
-LMGene has been developed mainly for analysis of microarray data using 
+\texttt{LMGene} has been developed for analysis of microarray data using 
 a linear model and glog data transformation in the R statistical package.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data preparation}
 \texttt{LMGene} takes objects of class \texttt{ExpressionSet}, which is the standard
-data structure of the \texttt{Biobase} package. Hence, if data which is of class
-\texttt{ExpressionSet} already, the user can jump to further steps, like diagnostic
-plotting or g-log transformation. Otherwise, the user needs to generate new objects
+data structure of the \texttt{Biobase} package. Therefore, the user who already has data that is of class
+\texttt{ExpressionSet} can jump to further steps, such as g-log transformation or looking for differentially expressed genes. Otherwise, the user needs to generate new objects
 of class \texttt{ExpressionSet}. For more detail, please see the vignette,
-`Textual Description of Biobase' in the \texttt{Biobase} package.
+`An Introduction to Biobase and ExpressionSets' in the \texttt{Biobase} package.
 
 {\bf Note: ExpressionSet.} In this package, an object of class \texttt{ExpressionSet}
 must produce proper data using the commands \texttt{exprs(object)} and \texttt{phenoData(object)}.
 
-{\tt Example.} \texttt{LMGene} includes a sample array data which is of class
+{\tt Example.} \texttt{LMGene} includes sample array data which is of class
 {\tt ExpressionSet}. Let's take a look this sample data.
 
 \begin{enumerate}
@@ -76,7 +75,7 @@ assuming that there are array data of {\tt matrix} class and experimental data o
 
 \begin{enumerate}
 
-\item The package has sample array and experimental data, {\tt sample.mat} and {\tt vlist}.
+\item The package includes sample array and experimental/phenotype data, {\tt sample.mat} and {\tt vlist}.
 <<eval=TRUE, echo=TRUE>>=
 data(sample.mat)
 dim(sample.mat)
@@ -88,22 +87,16 @@ vlist
 <<eval=TRUE, echo=TRUE>>=
 test.eS<-neweS(sample.mat, vlist)
 class(test.eS)
-identical(sample.eS, test.eS)
 @
 
 
 \end{enumerate}
 
 
-{\tt c.f.} If you have different types of array data, such as {\tt RGList}, {\tt marrayRaw}, and so on, 
-you can convert them into {\tt ExpressionSet} class by using {\tt as} method after installing {\tt convert} package.
-
-
-
 \section{G-log transformation}
 \begin{enumerate}
 \item {\tt Estimating parameters for g-log transformation.} 
-The linear model is not applied to the raw data, but to transformed and normalized data. Many people use a log transform. LMGene uses a log-like transform involving two parameters. We estimate the parameters ${\lambda}$ and ${\alpha}$ of the generalized log
+In \texttt{LMGene}, the linear model is not intended to be applied to the raw data, but to transformed and normalized data. Many people use a log transform. \texttt{LMGene} uses a log-like transform involving two parameters. We estimate the parameters ${\lambda}$ and ${\alpha}$ of the generalized log
 transform ${\log{(y - {\alpha} + {\sqrt{(y - {\alpha})^2 + {\lambda}}})} = \sinh^{-1}(\frac{y-\alpha}{\lambda})}+\log(\lambda)$ using the
 function tranest as follows:
 
@@ -122,7 +115,7 @@ tranpar
 @
 
 In this case, 100 genes are chosen at random and used to estimate
-the transformation parameter. The routine returns a list
+the transformation parameter. The function returns a list
 containing values for lambda and alpha.
 
    
@@ -160,18 +153,18 @@ tranparmult
 @
 
 
-It is even possible now to estimate parameters using a specified model. For example, if we think that the interaction of variables in vlist is important, we can add interaction to the model:
+One may also specify a model other than the default no-interaction model. For example, if we think that the interaction of variables in \texttt{vlist} is important, we can add interaction to the model:
 
 <<eval=TRUE, echo=TRUE>>=
 tranpar <- tranest(sample.eS, model='patient + dose + patient:dose')
 tranpar
 @
 
-The model is always specified in the same way as the right-hand side of an lm model. In the example above, we set the parameters to minimize the mean squared error for a regression of transformed gene expression against patient, log dose, and their interaction.
+The model is always specified in the same way as the right-hand side of an \texttt{lm} model. In the example above, we set the parameters to minimize the mean squared error for a regression of transformed gene expression against patient, log dose, and their interaction.
 
-Be very careful of using interactions between factor variables. If you do not have enough replications, you can easily overfit the data and have no errors to work with.
+Be very careful of using interactions between factor variables. If you do not have enough replicates, you can easily overfit the data and have no degrees of freedom left for error.
 
-Naturally, it's possible to use mult, lowessnorm, and model all together.
+Naturally, it's possible to use \texttt{mult}, \texttt{lowessnorm}, and \texttt{model} all together.
 
 
 \end{enumerate}   
@@ -188,15 +181,13 @@ ntrsample.eS <- lnormeS (trsample.eS)
 @
    
 \item {\tt Finding differentially expressed genes} 
-The lmgene routine computes significant probes using the method of
-Rocke (2003). A typical call would be
+The \texttt{LMGene} routine computes significant probes/genes by calculating gene-by-gene p-values for each factor in the model and adjusting for the specified false discovery rate (FDR).  A typical call would be
 
 <<eval=TRUE, echo=TRUE>>=
 sigprobes <- LMGene(ntrsample.eS)
 @
 
-There is an optional argument, level, which is the test level, .05 by
-default. A call using this optional parameter would look like
+There is an optional argument, \texttt{level}, which is the FDR (default 5 percent). A call using this optional parameter would look like
 
 <<eval=TRUE, echo=TRUE>>=
 sigprobes <- LMGene(ntrsample.eS,level=.01)
@@ -206,7 +197,7 @@ The result is a list whose components have the names of the effects in the
 model. The values are the significant genes for the test of that effect or else the
 message "No significant genes".
 
-As with tranest, it's possible to specify a more complex model to LMGene:
+As with \texttt{tranest}, it's possible to specify a more complex model to \texttt{LMGene}:
 
 <<eval=TRUE, echo=TRUE>>=
 sigprobes <- LMGene(ntrsample.eS, model='patient+dose+patient:dose')
@@ -216,41 +207,46 @@ sigprobes
 
 \end{enumerate}
 
-The routine LMGene requires the multtest package. 
 
 \bibliographystyle{plain}
 \begin{thebibliography}{99}
 
-\bibitem{1}  
+\bibitem{1}
+Benjamini, Y. and Hochberg, Y. (1995) ``Controlling the false discovery rate: a practical and powerful approach to multiple testing,'' \emph{Journal of the Royal Statistical Society, Series B}, {\bf57}, 289--300.
+
+\bibitem{2}  
 Durbin, B.P., Hardin, J.S., Hawkins, D.M., and Rocke, D.M. (2002) ``A
 variance-stabilizing transformation for gene-expression microarray
 data,'' \emph{Bioinformatics}, {\bf18}, S105--S110.
 
-\bibitem{2} 
+\bibitem{3} 
 Durbin, B. and Rocke, D. M. (2003a) ``Estimation of transformation
 parameters for microarray data,'' \emph{Bioinformatics}, {\bf19}, 1360--1367.
 
-\bibitem{3} 
-Durbin, B. and Rocke, D. M. (2003b) ``Exact and approximate
-variance-stabilizing transformations for two-color microarrays,''
-submitted for publication.
-
 \bibitem{4} 
+Durbin, B. and Rocke, D. M. (2003b) ``Variance-stabilizing transformations for two-color microarrays,''
+\emph{Bioinformatics}, {\bf20}, 660--667.
+
+\bibitem{5} 
 Geller, S.C., Gregg, J.P., Hagerman, P.J., and Rocke, D.M. (2003)
 ``Transformation and normalization of oligonucleotide microarray
 data,'' \emph{Bioinformatics}, {\bf19}, 1817--1823.
 
-\bibitem{5} 
+\bibitem{6}
+Huber W., Von Heydebreck A., S\"{u}ltmann H., Poustka A. and Vingron M. (2002) ``Variance stabilization applied to microarray data calibration and to the quantification of differential expression,''
+\emph{Bioinformatics}, {\bf18}, S96--S104.
+
+\bibitem{7} 
 Rocke, David M. (2004) ``Design and Analysis of Experiments with High Throughput Biological Assay Data,'' 
 \emph{Seminars in Cell and Developmental Biology },
 {\bf15}, 708--713.
 
-\bibitem{6} 
+\bibitem{8} 
 Rocke, D., and Durbin, B. (2001) ``A model for measurement error for
 gene expression arrays,'' \emph{Journal of Computational Biology},
 {\bf8}, 557--569.
 
-\bibitem{7} 
+\bibitem{9} 
 Rocke, D. and Durbin, B. (2003) ``Approximate
 variance-stabilizing transformations for gene-expression microarray
 data,'' \emph{Bioinformatics}, {\bf19}, 966--972.

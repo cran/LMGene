@@ -1,36 +1,34 @@
 \name{lnormeS}
 \alias{lnormeS}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{ Function to apply lowessnorm to a transformed expression set. Returns the normalized expression set. }
+\title{Function to apply lowess normalization to an expression set.}
 \description{
-Basically the same as \code{\link{lnorm}}, but it applies to, and returns, expression sets instead of matrices.
-
+Like \code{\link{lnorm}}, but applies to and returns an \code{ExpressionSet} or \code{AffyBatch} object instead of a \code{matrix}.
 }
 \usage{
 lnormeS(eS, span=0.1)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eS}{ A transformed expression set. }
-  \item{span}{A parameter for lowess. }
-}
-\details{
-
+  \item{eS}{ An \code{ExpressionSet} or \code{AffyBatch} object}
+  \item{span}{Smoothing parameter for lowess.  Larger values correspond to more smoothness.}
 }
 \value{
-Returns an expression set with the same vlist as eS, but the matrix has been normalized by \code{\link{lnorm}}.
+Returns an \code{ExpressionSet} with \code{exprs(eS)} normalized by \code{\link{lnorm}}.
 }
-\references{ \url{http://www.idav.ucdavis.edu/~dmrocke/}  }
-\author{ John Tillinghast }
-\note{ 
-}
+\references{ \url{http://dmrocke.ucdavis.edu}  }
+\author{ John Tillinghast, Blythe Durbin-Johnson}
 \seealso{ \code{\link{lnorm}}, \code{\link{norm}}}
 \examples{
+library(LMGene)
+library(Biobase)
 
 data(sample.eS)
-transeS (sample.eS, 667, 65) -> trsample.eS
-lnormeS (trsample.eS) -> normtrsample.eS
+
+# glog transform expression set
+trsample.eS <- transeS (sample.eS, 667, 65)
+
+# normalize expression set
+normtrsample.eS <- lnormeS (trsample.eS) 
 }
 
-\keyword{ math }% at least one, from doc/KEYWORDS
+\keyword{ smooth }
 

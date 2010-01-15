@@ -1,4 +1,4 @@
-"jggrad2" <-
+jggrad2 <-
 function(y,lambda,alpha)
 {
   ya <- y-alpha

@@ -1,29 +1,28 @@
 \name{neweS}
 \alias{neweS}
-\title{Coercing to an ExpressionSet code}
+\title{Coerce a matrix to class ExpressionSet}
 \description{
-  This function converts a matrix data and its experimental data into an object of 'ExpressionSet' class.
+  This function converts a data matrix into an \code{ExpressionSet} object.
 }
 \usage{
 neweS(mat, vlist, vlabel = as.list(names(vlist)))
 }
 \arguments{
-  \item{mat}{A matrix data to be converted.}
-  \item{vlist}{A list which contains several factors representing the experiment description.}
-  \item{vlabel}{A list of labels for the variables represented by the columns of \code{pData} of the 'ExpressionSet' object to be made.}
+  \item{mat}{A data matrix to be converted.}
+  \item{vlist}{A list, each component of which describes a factor in the experimental design.}
+  \item{vlabel}{A list of labels for each component of \code{vlist}.}
 }
 \details{
-  Must load Biobase package first for converting. \cr
-  \code{vlist} contains all the considered factors in which level values of each element represent the corresponding column of \code{mat}.
+Each element of a component of \code{vlist} corresponds to a column of \code{mat}.
+See \code{\link{vlist}} for an example.
 }
 \value{
-  \item{eset }{The converted object of 'ExpressionSet' class.}
+  \item{eset}{An \code{ExpressionSet} object.}
 }
-\references{\url{http://www.idav.ucdavis.edu/~dmrocke/}}
+\references{\url{http://dmrocke.ucdavis.edu}}
 \author{David Rocke and Geun-Cheol Lee}
-\seealso{\code{\link[methods]{as}}}
+\seealso{\code{\link{vlist}}}
 \examples{
-#library
 library(Biobase)
 library(LMGene)
 
@@ -34,6 +33,7 @@ data(vlist)
 Smpdt <- neweS(sample.mat,vlist)
 
 data(sample.eS)
-identical(sample.eS, Smpdt)
+identical(exprs(sample.eS), exprs(Smpdt))
+identical(pData(sample.eS), pData(Smpdt))
 }
 \keyword{manip}

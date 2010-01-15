@@ -1,4 +1,4 @@
-"pvadjust" <-
+pvadjust <-
 function(pvlist)
 #
 # pvlist is the output from genediff containing p-values from

@@ -1,6 +1,9 @@
-"transeS" <-
+transeS <-
 function (eS, lambda, alpha) 
 {
+  if (!is.element(class(eS),c("ExpressionSet","AffyBatch"))){
+	stop("'eS' must be an object of class 'ExpressionSet' or 'AffyBatch'")
+  }
   mat <- exprs(eS)
   if (length(alpha)==1) {
     mat.cor <- mat-alpha

@@ -1,6 +1,10 @@
-"rowaov" <-
+#Computes the mean squares and degrees of freedom for gene-by-#gene ANOVAs.
+rowaov <-
 function (eS, model=NULL) 
 {
+    if (class(eS) != 'ExpressionSet'){
+		stop("'eS' must be an object of class 'ExpressionSet'") 
+    }
     mat1 <- as.matrix(exprs(eS))
     for (i in 1:length(varLabels(eS))) {
         assign(paste("x", i, sep = ""), pData(eS)[, i])
@@ -20,8 +24,7 @@ function (eS, model=NULL)
     formobj <- as.formula(model2)
     tmp <- lm(formobj, x=TRUE, data=pData(eS))
     if (tmp$df <= 0) {
-      print("Error: model is overfit. Try a simpler model.")
-      return(NULL)
+      stop("model is overfit, try a simpler model")
     }
     for (i in 1:p) {
       tmp2 <- mlm2lm(tmp, i)
@@ -34,5 +37,6 @@ function (eS, model=NULL)
           resmat <- cbind(resmat, tmp4)
       }
     }
+    dimnames(resmat) <- NULL
     return(resmat)
 }

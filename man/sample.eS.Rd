@@ -3,17 +3,16 @@
 \docType{data}
 \title{Sample array data for LMGene}
 \description{
-  Sample 'ExpressionSet' class data.
+  Sample \code{ExpressionSet} class data.
 }
 \usage{data(sample.eS)}
 \format{
-  Formal class 'ExpressionSet' [package "Biobase"].
+  Formal class \code{ExpressionSet} [package \code{Biobase}].
 }
 \details{
-  identical with 'neweS(sample.mat, vlist)'
+  Identical with \code{neweS(sample.mat, vlist)}, up to metadata
 }
 \examples{
-#library
 library(Biobase)
 library(LMGene)
 
@@ -24,6 +23,7 @@ data(vlist)
 Smpdt <- neweS(sample.mat,vlist)
 
 data(sample.eS)
-identical(sample.eS, Smpdt)
+identical(exprs(sample.eS), exprs(Smpdt))
+identical(pData(sample.eS), pData(Smpdt))
 }
 \keyword{datasets}

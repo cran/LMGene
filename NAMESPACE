@@ -1,0 +1,1 @@
+export(genediff,glog,LMGene,lnorm,lnormeS,neweS,norm,psmeans,plotMeanSD,rowaov,tranest,tranestAffyProbeLevel,transeS)

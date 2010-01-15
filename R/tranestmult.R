@@ -1,4 +1,4 @@
-"tranestmult" <-
+tranestmult <-
 function (eS, starting = FALSE, lambda = 1000, alpha = 0, gradtol = 0.001,
     lowessnorm=FALSE, method=1, max_iter=200, model=NULL)
 {

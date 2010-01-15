@@ -1,6 +1,10 @@
-"lnorm" <-
+#Lowess normalization function
+lnorm <-
 function(mat1,span=.1)
 {
+  if (class(mat1) == 'ExpressionSet'){
+	stop("'mat1' may not be of class 'ExpressionSet'.  use function 'lnormeS' instead")
+  }
   mat2 <- as.matrix(mat1)
   p <- dim(mat2)[1]
   n <- dim(mat2)[2]

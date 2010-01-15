@@ -1,16 +1,8 @@
-"msecalc" <- 
+msecalc <- 
 function (eS, lam, alpha, lowessnorm, R) 
 {
     starttime <- Sys.time()
     mat1 <- as.matrix(exprs(eS))
- #   for (i in 1:length(varLabels(eS))) {
- #       assign(paste("x", i, sep = ""), as.factor(pData(eS)[,i]))
- #   }
- #   fchar <- ""
- #   for (i in 1:length(varLabels(eS))) {
- #       fchar <- paste(fchar, paste("x", i, sep = ""), ifelse(i < 
- #           length(varLabels(eS)), "+", ""), sep = "")
- #   }
     mat2 <- as.matrix(mat1)
 
     n <- dim(mat2)[2]

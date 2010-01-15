@@ -1,4 +1,4 @@
-"jglog" <-
+jglog <-
 function(y,lambda)
 {
   z <- sqrt(y^2+lambda)
